@@ -1,10 +1,10 @@
 <?php
 
-namespace Base\Http\Controllers\Auth;
+namespace imbalance\Http\Controllers\Auth;
 
-use Base\User;
+use imbalance\User;
 use Validator;
-use Base\Http\Controllers\Controller;
+use imbalance\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 

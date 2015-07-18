@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Exceptions;
+namespace imbalance\Exceptions;
 
 use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;

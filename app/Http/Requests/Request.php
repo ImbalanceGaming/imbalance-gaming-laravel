@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Http\Requests;
+namespace imbalance\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Events;
+namespace imbalance\Events;
 
 abstract class Event
 {

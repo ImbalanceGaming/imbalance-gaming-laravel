@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Providers;
+namespace imbalance\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

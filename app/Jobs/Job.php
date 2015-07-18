@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Jobs;
+namespace imbalance\Jobs;
 
 use Illuminate\Bus\Queueable;
 

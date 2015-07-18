@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Console\Commands;
+namespace imbalance\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;

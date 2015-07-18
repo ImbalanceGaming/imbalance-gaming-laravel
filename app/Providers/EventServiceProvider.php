@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Providers;
+namespace imbalance\Providers;
 
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -13,8 +13,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Base\Events\SomeEvent' => [
-            'Base\Listeners\EventListener',
+        'imbalance\Events\SomeEvent' => [
+            'imbalance\Listeners\EventListener',
         ],
     ];
 

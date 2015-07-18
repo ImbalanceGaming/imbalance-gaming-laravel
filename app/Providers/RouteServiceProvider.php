@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Providers;
+namespace imbalance\Providers;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -14,7 +14,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'Base\Http\Controllers';
+    protected $namespace = 'imbalance\Http\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.

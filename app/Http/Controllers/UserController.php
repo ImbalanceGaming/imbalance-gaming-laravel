@@ -1,12 +1,12 @@
 <?php
 
-namespace Base\Http\Controllers;
+namespace imbalance\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use Base\Http\Requests;
-use Base\Http\Controllers\Controller;
-use Base\Models\User;
+use imbalance\Http\Requests;
+use imbalance\Http\Controllers\Controller;
+use imbalance\Models\User;
 use Illuminate\Support\Facades\Response;
 use PhpParser\Comment;
 
