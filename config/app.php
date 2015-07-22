@@ -144,6 +144,11 @@ return [
         imbalance\Providers\EventServiceProvider::class,
         imbalance\Providers\RouteServiceProvider::class,
 
+        /*
+         * IDE Helper
+         */
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+
     ],
 
     /*

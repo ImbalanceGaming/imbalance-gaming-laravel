@@ -6,3 +6,4 @@ Homestead.yaml
 composer.phar
 public/*
 _ide_helper.php
+resources/avatars/*

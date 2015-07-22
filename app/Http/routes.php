@@ -19,5 +19,5 @@ Route::get('/', function () {
 //// API ROUTES ==================================
 Route::group(array('prefix' => 'api'), function() {
     Route::resource('users', 'UserController',
-        array('only' => array('index')));
+        array('only' => array('index', 'show')));
 });

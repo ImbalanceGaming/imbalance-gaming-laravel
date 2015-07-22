@@ -2,27 +2,31 @@
 
 namespace imbalance\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use imbalance\Http\Requests;
-use imbalance\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use imbalance\Http\Transformers\UserTransformer;
 use imbalance\Models\User;
+
+use Illuminate\Http\Request;
+use imbalance\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Response;
 use PhpParser\Comment;
 
-class UserController extends Controller
-{
+class UserController extends Controller {
+
+    use UserTransformer;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Response
      */
-    public function index()
-    {
-        $users = User::all();
-        return \Response::json([
-            'data' => $users->toArray()
-        ], 200);
+    public function index() {
+
+        $users = User::with('userDetails')->get();
+        return $this->respond([
+            'data' => $this->transformCollection($users)
+        ]);
+
     }
 
     /**
@@ -42,9 +46,19 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Response
      */
-    public function show($id)
-    {
-        //
+    public function show($id) {
+
+        try {
+            /** @var User $user */
+            $user = User::with('userDetails')->findOrFail($id);
+
+            return $this->respond([
+                'data' => $this->transform($user->toArray())
+            ]);
+        } catch(ModelNotFoundException $e) {
+            return $this->respondNotFound("User with ID of $id not found.");
+        }
+
     }
 
     /**
@@ -69,4 +83,5 @@ class UserController extends Controller
     {
         //
     }
+
 }
