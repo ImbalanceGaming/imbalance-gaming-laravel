@@ -13,11 +13,15 @@
 
 Route::get('/', function () {
     View::make('index'); // will return app/views/index.php
-//    return view('welcome');
 });
 
 //// API ROUTES ==================================
 Route::group(array('prefix' => 'api'), function() {
-    Route::resource('users', 'UserController',
-        array('only' => array('index', 'show')));
+    Route::resource('users', 'UserController', array('only' => array('index', 'show')));
+    Route::resource('userDetails', 'UserDetailsController', array('only' => array('index', 'show')));
+    Route::resource('user.userDetails', 'UserDetailsController@getUsersDetails', array('only' => array('index', 'show')));
+});
+
+Route::group(array('prefix' => 'api', 'middleware' => 'auth'), function() {
+    Route::resource('users', 'UserController', array('only' => array('store')));
 });

@@ -67,7 +67,7 @@ class UserDetails extends Model
      *
      * @var array
      */
-    protected $hidden = ['user_id'];
+    protected $hidden = [];
 
     // Model relation functions
 

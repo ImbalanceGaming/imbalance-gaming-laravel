@@ -11,11 +11,14 @@ class UserTableSeeder extends Seeder {
         $faker = Faker::create();
 
         foreach(range(1, 30) as $index) {
+            $password = $faker->password();
             $user = User::create([
                 'username'=>$faker->userName,
-                'password'=>Hash::make($faker->password()),
+                'password'=>Hash::make($password),
                 'email'=>$faker->email
             ]);
+
+            print "Username: ".$user->username." Password: ".$password."\n";
 
             $userDetails = new \imbalance\Models\UserDetails([
                 'forename'=>$faker->firstName,

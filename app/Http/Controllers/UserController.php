@@ -3,6 +3,8 @@
 namespace imbalance\Http\Controllers;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Input;
 use imbalance\Http\Transformers\UserTransformer;
 use imbalance\Models\User;
 
@@ -22,7 +24,7 @@ class UserController extends Controller {
      */
     public function index() {
 
-        $users = User::with('userDetails')->get();
+        $users = User::all();
         return $this->respond([
             'data' => $this->transformCollection($users)
         ]);
@@ -35,9 +37,26 @@ class UserController extends Controller {
      * @param  Request  $request
      * @return \Response
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request) {
+
+        if (!$request->has('username') || !$request->has('email') || !$request->has('password')) {
+            return $this->parametersFailed('Parameters failed validation for a user.');
+        }
+
+        try {
+            User::whereUsername($request->get('username'))->firstOrFail();
+
+            return $this->userExists('A user with the username '.$request->get('username').' already exists.');
+        } catch(ModelNotFoundException $e) {
+            User::create([
+                'username' => $request->get('username'),
+                'email' => $request->get('email'),
+                'password' => \Hash::make($request->get('password'))
+            ]);
+
+            return $this->respondCreated("Create user ".$request->get('username')." successfully");
+        }
+
     }
 
     /**
@@ -50,7 +69,7 @@ class UserController extends Controller {
 
         try {
             /** @var User $user */
-            $user = User::with('userDetails')->findOrFail($id);
+            $user = User::findOrFail($id);
 
             return $this->respond([
                 'data' => $this->transform($user->toArray())
@@ -83,5 +102,6 @@ class UserController extends Controller {
     {
         //
     }
+
 
 }

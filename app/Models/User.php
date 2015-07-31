@@ -13,6 +13,7 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  *
  * @property integer $id
  * @property string $name
+ * @property string $username
  * @property string $email
  * @property string $password
  * @property string $remember_token
@@ -20,14 +21,13 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  * @property \Carbon\Carbon $updated_at
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereId($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUsername($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereEmail($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User wherePassword($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereRememberToken($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUpdatedAt($value)
  * @property-read \imbalance\Models\UserDetails $userDetails
- * @property string $username 
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUsername($value)
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {

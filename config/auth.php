@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'model' => Base\Models\User::class,
+    'model' => imbalance\Models\User::class,
 
     /*
     |--------------------------------------------------------------------------
