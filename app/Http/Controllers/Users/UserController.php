@@ -1,10 +1,11 @@
 <?php
 
-namespace imbalance\Http\Controllers;
+namespace imbalance\Http\Controllers\Users;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Input;
+
 use imbalance\Http\Transformers\UserTransformer;
 use imbalance\Models\User;
 
@@ -39,14 +40,14 @@ class UserController extends Controller {
      */
     public function store(Request $request) {
 
-        if (!$request->has('username') || !$request->has('email') || !$request->has('password')) {
+        if (!$request->has(array('username', 'email', 'password'))) {
             return $this->parametersFailed('Parameters failed validation for a user.');
         }
 
         try {
             User::whereUsername($request->get('username'))->firstOrFail();
 
-            return $this->userExists('A user with the username '.$request->get('username').' already exists.');
+            return $this->creationError('A user with the username '.$request->get('username').' already exists.');
         } catch(ModelNotFoundException $e) {
             User::create([
                 'username' => $request->get('username'),

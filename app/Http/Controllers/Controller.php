@@ -12,8 +12,8 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
  * Class Controller
  * @package imbalance\Http\Controllers
  */
-abstract class Controller extends BaseController
-{
+abstract class Controller extends BaseController {
+
     use DispatchesJobs, ValidatesRequests;
 
     /**
@@ -40,7 +40,7 @@ abstract class Controller extends BaseController
     }
 
     /**
-     * @param $data
+     * @param array $data
      * @param array $headers
      * @return JsonResponse
      */
@@ -49,10 +49,10 @@ abstract class Controller extends BaseController
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @return JsonResponse
      */
-    private function respondWithError($message) {
+    protected function respondWithError($message) {
 
         return $this->respond([
             'error' => [
@@ -64,10 +64,10 @@ abstract class Controller extends BaseController
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @return JsonResponse
      */
-    private function respondWithSuccess($message) {
+    protected function respondWithSuccess($message) {
 
         return $this->respond([
             'success' => [
@@ -85,13 +85,11 @@ abstract class Controller extends BaseController
      * @return JsonResponse
      */
     protected function respondNotFound($message = 'Not Found') {
-
         return $this->setStatusCode(Illuminateresponse::HTTP_NOT_FOUND)->respondWithError($message);
-
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @return JsonResponse
      */
     protected function parametersFailed($message) {
@@ -99,24 +97,37 @@ abstract class Controller extends BaseController
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @return JsonResponse
      */
-    protected function userExists($message) {
+    protected function creationError($message) {
         return $this->setStatusCode(Illuminateresponse::HTTP_UNPROCESSABLE_ENTITY)->respondWithError($message);
+    }
+
+    /**
+     * @param string $message
+     * @return JsonResponse
+     */
+    protected function authError($message) {
+        return $this->setStatusCode(IlluminateResponse::HTTP_UNAUTHORIZED)->respondWithError($message);
+    }
+
+    /**
+     * @param string $message
+     * @return JsonResponse
+     */
+    protected function tokenError($message) {
+        return $this->setStatusCode(IlluminateResponse::HTTP_INTERNAL_SERVER_ERROR)->respondWithError($message);
     }
 
     // Success
 
     /**
-     *
-     * @param $message
+     * @param string $message
      * @return JsonResponse
      */
     protected function respondCreated($message) {
-
         return $this->setStatusCode(Illuminateresponse::HTTP_CREATED)->respondWithSuccess($message);
-
     }
 
 }

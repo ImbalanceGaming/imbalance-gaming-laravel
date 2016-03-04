@@ -17,11 +17,18 @@ Route::get('/', function () {
 
 //// API ROUTES ==================================
 Route::group(array('prefix' => 'api'), function() {
-    Route::resource('users', 'UserController', array('only' => array('index', 'show')));
-    Route::resource('userDetails', 'UserDetailsController', array('only' => array('index', 'show')));
-    Route::resource('user.userDetails', 'UserDetailsController@getUsersDetails', array('only' => array('index', 'show')));
+    Route::resource('login', 'Auth\AuthenticateController@authenticate', array('only' => array('store')));
+    Route::resource('register', 'Auth\AuthenticateController@register', array('only' => array('store')));
 });
 
-Route::group(array('prefix' => 'api', 'middleware' => 'auth'), function() {
-    Route::resource('users', 'UserController', array('only' => array('store')));
+Route::group(array('prefix' => 'api', 'middleware' => 'jwt.auth'), function() {
+    Route::resource('users', 'Users\UserController', array('only' => array('index', 'show', 'store')));
+    Route::resource('userDetails', 'Users\UserDetailsController', array('only' => array('index', 'show')));
+    Route::resource('user.userDetails', 'Users\UserDetailsController@getUsersDetails', array('only' => array('index', 'show')));
 });
+
+//Route::group(array('prefix' => 'api', 'middleware' => 'jwt.refresh'), function() {
+//    Route::resource('users', 'Users\UserController', array('only' => array('index', 'show', 'store')));
+//    Route::resource('userDetails', 'Users\UserDetailsController', array('only' => array('index', 'show')));
+//    Route::resource('user.userDetails', 'Users\UserDetailsController@getUsersDetails', array('only' => array('index', 'show')));
+//});

@@ -28,6 +28,8 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUpdatedAt($value)
  * @property-read \imbalance\Models\UserDetails $userDetails
+ * @property boolean $email_verified
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereEmailVerified($value)
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {

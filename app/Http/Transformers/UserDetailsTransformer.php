@@ -13,7 +13,7 @@ trait UserDetailsTransformer {
             'userId' => (int)$userDetails['user_id'],
             'forename' => $userDetails['forename'],
             'surname' => $userDetails['surname'],
-            'dob' => date('d-m-Y', strtotime($userDetails['dob'])),
+            'dob' => date('d/m/Y', strtotime($userDetails['dob'])),
             'country' => $userDetails['country'],
             'website' => $userDetails['website'],
             'avatar' => $userDetails['avatar'],

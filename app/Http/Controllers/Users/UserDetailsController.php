@@ -1,6 +1,6 @@
 <?php
 
-namespace imbalance\Http\Controllers;
+namespace imbalance\Http\Controllers\Users;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -30,15 +30,6 @@ class UserDetailsController extends Controller {
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Response
-     */
-    public function create() {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  Request $request
@@ -55,7 +46,18 @@ class UserDetailsController extends Controller {
      * @return \Response
      */
     public function show($id) {
-        //
+
+        try {
+            /** @var User $userDetails */
+            $userDetails = UserDetails::findOrFail($id);
+
+            return $this->respond([
+                'data' => $this->transform($userDetails->toArray())
+            ]);
+        } catch(ModelNotFoundException $e) {
+            return $this->respondNotFound("Could not find user details for $id .");
+        }
+
     }
 
     /**
