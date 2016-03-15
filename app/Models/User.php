@@ -17,6 +17,8 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  * @property string $email
  * @property string $password
  * @property string $remember_token
+ * @property boolean $email_verified
+ * @property string $role
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereId($value)
@@ -27,9 +29,13 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereRememberToken($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUpdatedAt($value)
- * @property-read \imbalance\Models\UserDetails $userDetails
- * @property boolean $email_verified
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereEmailVerified($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereRole($value)
+ * @property-read \imbalance\Models\UserDetail $userDetail
+ * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Project[] $projects
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\UserBoard[] $userBoards
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Permission[] $permissions
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
@@ -40,14 +46,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'user';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['username', 'password', 'email'];
+    protected $fillable = ['username', 'password', 'email', 'role'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -63,8 +69,25 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function userDetails() {
-        return $this->hasOne('imbalance\Models\UserDetails');
+    public function userDetail() {
+        return $this->hasOne('imbalance\Models\UserDetail');
+    }
+
+    /**
+     * Get collection of projects that this user is a lead for
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function projects() {
+        return $this->hasMany('imbalance\Models\Project');
+    }
+
+    public function userBoards() {
+        return $this->hasMany('imbalance\Models\UserBoard');
+    }
+
+    public function permissions() {
+        return $this->belongsToMany('imbalance\Models\Permission', 'permission_assignment');
     }
 
 }

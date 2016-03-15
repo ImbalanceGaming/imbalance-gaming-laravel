@@ -15,12 +15,13 @@ class UserTableSeeder extends Seeder {
             $user = User::create([
                 'username'=>$faker->userName,
                 'password'=>Hash::make($password),
-                'email'=>$faker->email
+                'email'=>$faker->email,
+                'role'=>'dev'
             ]);
 
-            print "Username: ".$user->username." Password: ".$password."\n";
+            print "Email: ".$user->email." Password: ".$password."\n";
 
-            $userDetails = new \imbalance\Models\UserDetails([
+            $userDetail = new \imbalance\Models\UserDetail([
                 'forename'=>$faker->firstName,
                 'surname'=>$faker->lastName,
                 'dob'=>$faker->date(),
@@ -31,7 +32,7 @@ class UserTableSeeder extends Seeder {
                 'facebook'=>$faker->url
             ]);
 
-            $user->userDetails()->save($userDetails);
+            $user->userDetail()->save($userDetail);
         }
 
     }

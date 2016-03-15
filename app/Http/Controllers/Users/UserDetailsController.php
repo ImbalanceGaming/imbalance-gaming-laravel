@@ -9,7 +9,7 @@ use imbalance\Http\Requests;
 use imbalance\Http\Controllers\Controller;
 use imbalance\Http\Transformers\UserDetailsTransformer;
 use imbalance\Models\User;
-use imbalance\Models\UserDetails;
+use imbalance\Models\UserDetail;
 
 class UserDetailsController extends Controller {
 
@@ -22,7 +22,7 @@ class UserDetailsController extends Controller {
      */
     public function index() {
 
-        $userDetails = UserDetails::all();
+        $userDetails = UserDetail::all();
         return $this->respond([
             'data' => $this->transformCollection($userDetails)
         ]);
@@ -49,7 +49,7 @@ class UserDetailsController extends Controller {
 
         try {
             /** @var User $userDetails */
-            $userDetails = UserDetails::findOrFail($id);
+            $userDetails = UserDetail::findOrFail($id);
 
             return $this->respond([
                 'data' => $this->transform($userDetails->toArray())
@@ -100,11 +100,11 @@ class UserDetailsController extends Controller {
             return $this->respondNotFound("User with ID of $id not found.");
         }
 
-        $userDetails = $user->userDetails;
+        $userDetail = $user->userDetail;
 
-        if (!empty($userDetails)) {
+        if (!empty($userDetail)) {
                 return $this->respond([
-                    'data' => $this->transform($userDetails)
+                    'data' => $this->transform($userDetail)
                 ]);
         } else {
             return $this->respondNotFound("User $id does not have any details");
