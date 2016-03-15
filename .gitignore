@@ -8,3 +8,4 @@ public/*
 _ide_helper.php
 resources/avatars/*
 /.phpstorm.meta.php
+composer.lock

@@ -62,10 +62,13 @@ class AuthenticateController extends Controller
     }
 
     /**
-     * @param string $token
+     * @param Request $request
      * @return JsonResponse
+     * @internal param string $token
      */
-    public function getAuthenticatedUser($token) {
+    public function getAuthenticatedUser(Request $request) {
+
+        $token = $request->only('token')['token'];
 
         try {
             if (!$user = JWTAuth::authenticate($token)) {

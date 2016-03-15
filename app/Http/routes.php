@@ -19,6 +19,7 @@ Route::get('/', function () {
 Route::group(array('prefix' => 'api'), function() {
     Route::resource('login', 'Auth\AuthenticateController@authenticate', array('only' => array('store')));
     Route::resource('register', 'Auth\AuthenticateController@register', array('only' => array('store')));
+    Route::resource('loginUser', 'Auth\AuthenticateController@getAuthenticatedUser', array('only' => array('store')));
 });
 
 Route::group(array('prefix' => 'api', 'middleware' => 'jwt.auth'), function() {

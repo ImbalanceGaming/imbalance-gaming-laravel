@@ -1,10 +1,7 @@
-# Laravel Base Project
+# Laravel Imbalance Project
 
 ## Description
-Base setup for projects using Laravel.
-
-Make sure not to use this base project directly instead follow the instructions at [this page](https://help.github.com/articles/duplicating-a-repository/).
-This will create a duplicate of this repo in a new repo that wont effect this repo.
+A REST API to allow frontend frameworks such as angular to use services provided.
 
 ## Server Requirements
 * Composer
@@ -24,8 +21,18 @@ This will create a duplicate of this repo in a new repo that wont effect this re
 7. Change the database config in the .env file as well to desired database.
 8. Rename your new app to something appropriate using the **_php artisan app:name <App Name>_** command.
 9. If the app isn't working after the above command check the namespaces on files as it changes them.
+10. You can also do a sudo tail -f /var/log/apahce2/error.log to see if there are errors.
 
 App still not working? See laravel docs, turn on debug in the .env file and google search any errors you see.
+
+## PHPStorm
+When running the composer install or update command a **_ide_helper.php_** file is generated that helps phpStorm recognise methods built by the factories.
+
+You will also want to install the PHPStorm Laravel plugin, see [this link](http://blog.jetbrains.com/phpstorm/2015/01/laravel-development-using-phpstorm/) for more details.
+
+You can also run the **_sudo php artisan ide-helper:models_** command to auto generate model doc blocks.
+
+See the link in the resources section for more info.
 
 ## Useful commands
 * **_php artisan cache:clear_** clears cache of app.
