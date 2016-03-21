@@ -16,6 +16,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSection whereName($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSection whereMenuId($value)
  * @mixin \Eloquent
+ * @property string $link
+ * @property string $component
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSection whereLink($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSection whereComponent($value)
  */
 class MenuSubSection extends Model
 {

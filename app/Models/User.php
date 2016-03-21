@@ -36,6 +36,8 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Project[] $projects
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\UserBoard[] $userBoards
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Permission[] $permissions
+ * @property string $last_login
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereLastLogin($value)
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {

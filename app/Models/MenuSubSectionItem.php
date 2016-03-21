@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSectionItem whereLink($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSectionItem whereMenuSubSectionId($value)
  * @mixin \Eloquent
+ * @property string $component
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSectionItem whereComponent($value)
  */
 class MenuSubSectionItem extends Model
 {

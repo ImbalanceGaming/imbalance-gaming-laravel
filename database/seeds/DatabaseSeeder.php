@@ -7,8 +7,8 @@ class DatabaseSeeder extends Seeder
 {
 
     private $_tableNames = [
-        'users',
-        'user_details'
+        'user',
+        'user_detail'
     ];
 
     /**

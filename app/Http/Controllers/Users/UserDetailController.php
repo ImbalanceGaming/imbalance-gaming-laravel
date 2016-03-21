@@ -11,7 +11,7 @@ use imbalance\Http\Transformers\UserDetailsTransformer;
 use imbalance\Models\User;
 use imbalance\Models\UserDetail;
 
-class UserDetailsController extends Controller {
+class UserDetailController extends Controller {
 
     use UserDetailsTransformer;
 

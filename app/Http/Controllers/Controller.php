@@ -130,4 +130,12 @@ abstract class Controller extends BaseController {
         return $this->setStatusCode(Illuminateresponse::HTTP_CREATED)->respondWithSuccess($message);
     }
 
+    /**
+     * @param string $message
+     * @return JsonResponse
+     */
+    protected function respondUpdated($message) {
+        return $this->setStatusCode(Illuminateresponse::HTTP_OK)->respondWithSuccess($message);
+    }
+
 }

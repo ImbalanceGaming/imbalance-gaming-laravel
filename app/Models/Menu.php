@@ -20,6 +20,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Menu wherePlacement($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Menu whereModuleSectionId($value)
  * @mixin \Eloquent
+ * @property string $link
+ * @property string $component
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Menu whereLink($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Menu whereComponent($value)
  */
 class Menu extends Model
 {

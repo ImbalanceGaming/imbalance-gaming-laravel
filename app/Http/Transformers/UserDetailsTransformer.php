@@ -23,4 +23,8 @@ trait UserDetailsTransformer {
 
     }
 
+    public function transformWithRelation($userDetails) {
+
+    }
+
 }
