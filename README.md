@@ -25,6 +25,10 @@ A REST API to allow frontend frameworks such as angular to use services provided
 
 App still not working? See laravel docs, turn on debug in the .env file and google search any errors you see.
 
+## Live Install
+1. In .env change APP_ENV to production and APP_DEBUG to false.
+2. In .env setup mail setting to use your choice of mail service.
+
 ## PHPStorm
 When running the composer install or update command a **_ide_helper.php_** file is generated that helps phpStorm recognise methods built by the factories.
 
