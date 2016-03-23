@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "name": "Imbalance API",
+    "description": "A REST API to allow frontend frameworks such as angular to use services provided.",
+    "keywords": ["framework", "laravel", "Imbalance", "Gaming"],
+    "license": "GNU",
     "type": "project",
     "require": {
         "php": ">=5.5.9",

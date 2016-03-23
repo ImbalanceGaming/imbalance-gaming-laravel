@@ -34,6 +34,13 @@ You can also run the **_sudo php artisan ide-helper:models_** command to auto ge
 
 See the link in the resources section for more info.
 
+## Apache Config File
+See the apache example folder for info on setting up apache .conf files.
+
+Note the rewrite options used in these files, these are important and the site wont work properly without them.  
+The aim of these rewrite rules is to allow the Authorization header to be picked up by apache, this header is used  
+for the token based authO system.
+
 ## Useful commands
 * **_php artisan cache:clear_** clears cache of app.
 * **_php artisan routes_** shows apps current routes.
