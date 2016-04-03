@@ -26,25 +26,31 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $url
+ * @property string $git_url
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereUrl($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereGitUrl($value)
  */
 class Project extends Model
 {
     protected $table = 'project';
 
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'key',
         'name',
         'description',
         'status',
+        'url',
+        'git_url',
         'user_id'
     ];
 
     protected $guarded = [];
 
     public function leadUser() {
-        return $this->belongsTo('imbalance\Models\User');
+        return $this->belongsTo('imbalance\Models\User', 'user_id');
     }
 
     public function groups() {

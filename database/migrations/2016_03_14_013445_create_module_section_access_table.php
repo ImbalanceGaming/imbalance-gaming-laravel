@@ -13,8 +13,10 @@ class CreateModuleSectionAccessTable extends Migration
     public function up()
     {
         Schema::create('module_section_access', function (Blueprint $table) {
-            $table->integer('section_id')->unique()->unsigned();
-            $table->integer('permission_id')->unique()->unsigned();
+            $table->integer('section_id')->unsigned();
+            $table->integer('permission_id')->unsigned();
+            
+            $table->primary(['section_id', 'permission_id']);
         });
 
         Schema::table('module_section_access', function($table) {

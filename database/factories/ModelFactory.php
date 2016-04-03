@@ -11,12 +11,39 @@
 |
 */
 
-$factory->define(imbalance\Models\User::class, function ($faker) {
+$factory->define(imbalance\Models\User::class, function (Faker\Generator $faker) {
+
+    $username = $faker->userName;
+    $password = $faker->password();
     return [
-        'name' => $faker->name,
-        'email' => $faker->email,
-        'password' => str_random(10),
-        'remember_token' => str_random(10),
-        'role' => 'dev'
+        'username'=>$username,
+        'password'=>Hash::make($password),
+        'email'=>$faker->email,
+        'role'=>'User',
+        'email_verified'=>true,
+        'forename'=>$faker->firstName,
+        'surname'=>$faker->lastName,
+        'dob'=>$faker->date(),
+        'country'=>$faker->country,
+        'website'=>$faker->url,
+        'avatar'=>null,
+        'twitter_username'=>$username,
+        'facebook'=>$faker->url
     ];
+
+});
+
+$factory->define(imbalance\Models\Project::class, function (Faker\Generator $faker) {
+
+    $name = $faker->word;
+    
+    return [
+        'key'=>ucfirst(substr($name, 0, 1)),
+        'name'=>ucfirst($name),
+        'description'=>$faker->sentence,
+        'status'=>'Development',
+        'git_url'=>'test.com',
+        'user_id'=>null
+    ];
+
 });

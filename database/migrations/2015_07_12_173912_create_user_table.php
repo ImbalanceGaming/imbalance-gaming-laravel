@@ -19,7 +19,17 @@ class CreateUserTable extends Migration
             $table->string('email')->unique();
             $table->string('role')->default('User');
             $table->boolean('email_verified')->default(false);
-            $table->rememberToken();
+            $table->string('email_verified_code');
+            $table->boolean('active')->default(true);
+            $table->dateTime('last_login');
+            $table->string('forename', 100)->nullable();
+            $table->string('surname', 100)->nullable();
+            $table->date('dob')->nullable();
+            $table->string('country', 100)->nullable();
+            $table->string('website', 200)->nullable();
+            $table->string('avatar', 200)->nullable();
+            $table->string('twitter_username', 200)->nullable();
+            $table->string('facebook', 200)->nullable();
             $table->timestamps();
         });
     }

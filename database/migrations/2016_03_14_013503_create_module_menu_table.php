@@ -18,11 +18,16 @@ class CreateModuleMenuTable extends Migration
             $table->string('description')->nullable();
             $table->string('placement');
             $table->integer('module_section_id')->unsigned();
+            $table->integer('component_id')->unsigned()->nullable();
         });
 
         Schema::table('menu', function($table) {
             $table->foreign('module_section_id')
                 ->references('id')->on('module_section')
+                ->onDelete('cascade');
+
+            $table->foreign('component_id')
+                ->references('id')->on('component')
                 ->onDelete('cascade');
         });
     }

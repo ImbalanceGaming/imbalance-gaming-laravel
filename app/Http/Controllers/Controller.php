@@ -2,6 +2,8 @@
 
 namespace imbalance\Http\Controllers;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response as IlluminateResponse;
@@ -136,6 +138,34 @@ abstract class Controller extends BaseController {
      */
     protected function respondUpdated($message) {
         return $this->setStatusCode(Illuminateresponse::HTTP_OK)->respondWithSuccess($message);
+    }
+
+    /**
+     * @param string $message
+     * @return JsonResponse
+     */
+    protected function respondDeleted($message) {
+        return $this->setStatusCode(Illuminateresponse::HTTP_OK)->respondWithSuccess($message);
+    }
+
+    //Pagination
+    /**
+     * @param LengthAwarePaginator $paginator
+     * @param array $data
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function respondWithPagination(LengthAwarePaginator $paginator, $data) {
+
+        return $this->respond([
+            'data' => $data,
+            'paginator' => [
+                'per_page' => $paginator->perPage(),
+                'last_page' => $paginator->lastPage(),
+                'current_page' => $paginator->currentPage(),
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem()
+            ]
+        ]);
     }
 
 }

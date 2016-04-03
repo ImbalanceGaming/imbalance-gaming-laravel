@@ -20,6 +20,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $component
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSection whereLink($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSection whereComponent($value)
+ * @property integer $component_id
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSection whereComponentId($value)
  */
 class MenuSubSection extends Model
 {
@@ -40,6 +42,10 @@ class MenuSubSection extends Model
 
     public function menu() {
         return $this->belongsTo('imbalance\Models\Menu');
+    }
+
+    public function component() {
+        return $this->belongsTo('imbalance\Models\Component');
     }
 
         

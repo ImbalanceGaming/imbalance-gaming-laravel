@@ -10,30 +10,42 @@ class UserTableSeeder extends Seeder {
 
         $faker = Faker::create();
 
-        foreach(range(1, 30) as $index) {
-            $password = $faker->password();
-            $user = User::create([
-                'username'=>$faker->userName,
-                'password'=>Hash::make($password),
-                'email'=>$faker->email,
-                'role'=>'dev'
-            ]);
+        $password = '10Banana12';
 
-            print "Email: ".$user->email." Password: ".$password."\n";
+        $user = User::create([
+            'username'=>'c.pratt',
+            'password'=>Hash::make($password),
+            'email'=>'chrispratt1985@gmail.com',
+            'role'=>'Administrator',
+            'email_verified'=>true,
+            'forename'=>'Christopher',
+            'surname'=>'Pratt',
+            'dob'=>$faker->date(),
+            'country'=>$faker->country,
+            'website'=>$faker->url,
+            'avatar'=>$faker->image('resources/avatars', 60, 60),
+            'twitter_username'=>'c.pratt',
+            'facebook'=>$faker->url
+        ]);
 
-            $userDetail = new \imbalance\Models\UserDetail([
-                'forename'=>$faker->firstName,
-                'surname'=>$faker->lastName,
-                'dob'=>$faker->date(),
-                'country'=>$faker->country,
-                'website'=>$faker->url,
-                'avatar'=>$faker->image('resources/avatars', 60, 60),
-                'twitterUsername'=>$user->username,
-                'facebook'=>$faker->url
-            ]);
+        print "Email: ".$user->email." Password: ".$password."\n";
 
-            $user->userDetail()->save($userDetail);
-        }
+        $password = $faker->password();
+        $user = User::create([
+            'username'=>'admin',
+            'password'=>Hash::make($password),
+            'email'=>'admin@imbalancegaming.com',
+            'role'=>'Administrator',
+            'email_verified'=>true,
+            'forename'=>'Admin',
+            'surname'=>'User'
+        ]);
+
+        print "Email: ".$user->email." Password: ".$password."\n";
+
+        factory(\imbalance\Models\User::class, 30)->create()->each(function(\imbalance\Models\User $u) {
+            print "Email: ".$u->email."\n";
+        });
 
     }
 

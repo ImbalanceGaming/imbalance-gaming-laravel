@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property string $component
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSectionItem whereComponent($value)
+ * @property integer $component_id
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\MenuSubSectionItem whereComponentId($value)
  */
 class MenuSubSectionItem extends Model
 {
@@ -36,6 +38,10 @@ class MenuSubSectionItem extends Model
 
     public function menuSubSection() {
         return $this->belongsTo('imbalance\Models\MenuSubSection');
+    }
+
+    public function component() {
+        return $this->belongsTo('imbalance\Models\Component');
     }
 
         

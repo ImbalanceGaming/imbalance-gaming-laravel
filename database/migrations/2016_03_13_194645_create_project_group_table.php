@@ -13,8 +13,10 @@ class CreateProjectGroupTable extends Migration
     public function up()
     {
         Schema::create('project_group', function (Blueprint $table) {
-            $table->integer('project_id')->unique()->unsigned();
-            $table->integer('group_id')->unique()->unsigned();
+            $table->integer('project_id')->unsigned();
+            $table->integer('group_id')->unsigned();
+
+            $table->primary(['project_id', 'group_id']);
         });
 
         Schema::table('project_group', function($table) {

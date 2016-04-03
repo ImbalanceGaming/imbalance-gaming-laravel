@@ -8,36 +8,53 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
+
+
 /**
  * imbalance\Models\User
  *
  * @property integer $id
- * @property string $name
  * @property string $username
- * @property string $email
  * @property string $password
- * @property string $remember_token
- * @property boolean $email_verified
+ * @property string $email
  * @property string $role
+ * @property boolean $email_verified
+ * @property string $email_verified_code
+ * @property boolean $active
+ * @property string $last_login
+ * @property string $forename
+ * @property string $surname
+ * @property string $dob
+ * @property string $country
+ * @property string $website
+ * @property string $avatar
+ * @property string $twitter_username
+ * @property string $facebook
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereId($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereName($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUsername($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereEmail($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User wherePassword($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereRememberToken($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereCreatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUpdatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereEmailVerified($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereRole($value)
- * @property-read \imbalance\Models\UserDetail $userDetail
- * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Project[] $projects
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\UserBoard[] $userBoards
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Permission[] $permissions
- * @property string $last_login
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUsername($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User wherePassword($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereEmail($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereRole($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereEmailVerified($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereEmailVerifiedCode($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereActive($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereLastLogin($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereForename($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereSurname($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereDob($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereCountry($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereWebsite($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereAvatar($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereTwitterUsername($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereFacebook($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
@@ -55,7 +72,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @var array
      */
-    protected $fillable = ['username', 'password', 'email', 'role'];
+    protected $fillable = ['username', 'password', 'email', 'role', 'active'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -65,15 +82,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     protected $hidden = ['password', 'remember_token'];
 
     // Model relation functions
-
-    /**
-     * Get details for this user
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function userDetail() {
-        return $this->hasOne('imbalance\Models\UserDetail');
-    }
 
     /**
      * Get collection of projects that this user is a lead for

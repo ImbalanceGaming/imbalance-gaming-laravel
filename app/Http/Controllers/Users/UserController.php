@@ -2,23 +2,25 @@
 
 namespace imbalance\Http\Controllers\Users;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Input;
 
+use imbalance\Http\Transformers\UserDetailsTransformer;
 use imbalance\Http\Transformers\UserTransformer;
 use imbalance\Models\User;
 use imbalance\Models\UserDetail;
 
 use Illuminate\Http\Request;
 use imbalance\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Response;
 use PhpParser\Comment;
+use Validator;
 
 class UserController extends Controller {
 
-    use UserTransformer;
+    private $_userTransformer;
+
+    function __construct() {
+        $this->_userTransformer = new UserTransformer();
+    }
 
     /**
      * Display a listing of the resource.
@@ -27,10 +29,15 @@ class UserController extends Controller {
      */
     public function index() {
 
-        $users = User::all();
-        return $this->respond([
-            'data' => $this->transformCollection($users)
-        ]);
+        $limit = \Input::get('limit')?:10;
+
+        if ($limit > 20) {
+            return $this->respondWithError('Pagination limit can not be above 20');
+        }
+
+        $users = User::paginate($limit);
+
+        return $this->respondWithPagination($users, $this->_userTransformer->transformCollection($users->items()));
 
     }
 
@@ -51,19 +58,20 @@ class UserController extends Controller {
 
             return $this->creationError('A user with the email of ' . $request->get('email') . ' already exists.');
         } catch (ModelNotFoundException $e) {
+            $username = $request->get('username');
+            try {
+                User::whereUsername($username)->firstOrFail();
+                $username = $username . (string)rand();
+            } catch (ModelNotFoundException $e) {}
+
             $password = str_random();
             $user = User::create([
-                'username' => $request->get('username'),
+                'username' => $username,
                 'email' => $request->get('email'),
-                'password' => \Hash::make($password)
-            ]);
-
-            $userDetail = new UserDetail([
+                'password' => \Hash::make($password),
                 'forename' => $request->get('forename'),
                 'surname' => $request->get('surname')
             ]);
-
-            $user->userDetail()->save($userDetail);
 
             \Mail::send('users.create', [
                 'userId' => $user->id,
@@ -75,7 +83,7 @@ class UserController extends Controller {
                     ->to($user->email);
             });
 
-            return $this->respondCreated("Created user " . $request->get('username') . " successfully");
+            return $this->respondCreated("Created user " . $user->username . " successfully");
         }
 
     }
@@ -93,7 +101,7 @@ class UserController extends Controller {
             $user = User::findOrFail($id);
 
             return $this->respond([
-                'data' => $this->transform($user->toArray())
+                'data' => $this->_userTransformer->transform($user->toArray())
             ]);
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("User with ID of $id not found.");
@@ -119,12 +127,9 @@ class UserController extends Controller {
             $user = User::findOrFail($id);
             $user->email = $request->get('email');
             $user->role = $request->get('role');
+            $user->forename = $request->get('forename');
+            $user->surname = $request->get('surname');
             $user->save();
-
-            $user->userDetail()->update([
-                'forename' => $request->get('forename'),
-                'surname' => $request->get('surname')
-            ]);
 
             return $this->respondUpdated("User " . $user->username . " updated successfully");
         } catch (ModelNotFoundException $e) {
@@ -140,15 +145,63 @@ class UserController extends Controller {
      * @return \Response
      */
     public function destroy($id) {
-        //
+
+        try {
+            /** @var User $user */
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return $this->respondDeleted("User " . $user->username . " deleted");
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound("User with ID of $id not found.");
+        }
+
     }
 
-    public function usersWithDetails() {
+    /**
+     * Set the active status flag on a user
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse#
+     */
+    public function setActiveStatus($id) {
 
-        $users = User::with('userDetail')->get();
-        return $this->respond([
-            'data' => $this->transformCollectionWithRelation($users)
-        ]);
+        try {
+            /** @var User $user */
+            $user = User::findOrFail($id);
+            if ($user->active) {
+                $user->active = false;
+                $activeStatus = 'deactivated';
+            } else {
+                $user->active = true;
+                $activeStatus = 'activated';
+            }
+            $user->save();
+
+            return $this->respondUpdated("User " . $user->username . " ".$activeStatus);
+        } catch (ModelNotFoundException $e) {
+            return $this->respondNotFound("User with ID of $id not found.");
+        }
+
+    }
+
+    /**
+     * Find users from given search term
+     *
+     * @param $searchTerm
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function findUsers($searchTerm) {
+
+        if ($searchTerm) {
+            $users = User::where('forename', 'LIKE', "%$searchTerm%")->get();
+
+            return $this->respond([
+                'data' => $this->_userTransformer->transformCollection($users->toArray())
+            ]);
+        } else {
+            return $this->respond([]);
+        }
 
     }
 

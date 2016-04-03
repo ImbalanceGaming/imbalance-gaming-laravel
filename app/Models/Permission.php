@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Permission whereEdit($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Permission whereView($value)
  * @mixin \Eloquent
+ * @property boolean $add
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Permission whereAdd($value)
  */
 class Permission extends Model
 {

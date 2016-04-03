@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $component
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Menu whereLink($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Menu whereComponent($value)
+ * @property integer $component_id
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Menu whereComponentId($value)
  */
 class Menu extends Model
 {
@@ -48,5 +50,8 @@ class Menu extends Model
         return $this->belongsTo('imbalance\Models\ModuleSection');
     }
 
-        
+    public function component() {
+        return $this->belongsTo('imbalance\Models\Component');
+    }
+    
 }

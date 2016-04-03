@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePermissionTable extends Migration
+class CreateComponentTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,13 @@ class CreatePermissionTable extends Migration
      */
     public function up()
     {
-        Schema::create('permission', function (Blueprint $table) {
+        Schema::create('component', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
             $table->string('description')->nullable();
-            $table->boolean('view');
-            $table->boolean('add');
-            $table->boolean('edit');
-            $table->boolean('delete');
+            $table->string('path');
+            $table->string('component_path');
+            $table->string('component_name');
         });
     }
 
@@ -30,6 +29,6 @@ class CreatePermissionTable extends Migration
      */
     public function down()
     {
-        Schema::drop('permission');
+        Schema::drop('component');
     }
 }

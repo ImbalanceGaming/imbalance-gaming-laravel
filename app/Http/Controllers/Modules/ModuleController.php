@@ -11,7 +11,11 @@ use imbalance\Http\Controllers\Controller;
 
 class ModuleController extends Controller {
 
-    use ModuleTransformer;
+    private $_moduleTransformer;
+
+    function __construct() {
+        $this->_moduleTransformer = new ModuleTransformer();
+    }
 
     /**
      * Display a listing of the resource.
@@ -20,10 +24,10 @@ class ModuleController extends Controller {
      */
     public function index() {
 
-        $modules = Module::with('moduleSections.menus')->get();
+        $modules = Module::all();
 
         return $this->respond([
-            'data' => $modules
+            'data' => $this->_moduleTransformer->transformCollection($modules)
         ]);
     }
 

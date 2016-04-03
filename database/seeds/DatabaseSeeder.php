@@ -8,7 +8,14 @@ class DatabaseSeeder extends Seeder
 
     private $_tableNames = [
         'user',
-        'user_detail'
+        'project',
+        'group',
+        'group_membership',
+        'project_group',
+        'module',
+        'module_section',
+        'component',
+        'menu'
     ];
 
     /**
@@ -23,6 +30,12 @@ class DatabaseSeeder extends Seeder
         Model::unguard();
 
         $this->call(UserTableSeeder::class);
+        $this->call(GroupTableSeeder::class);
+        $this->call(ProjectTableSeeder::class);
+        $this->call(ModuleTableSeeder::class);
+        $this->call(ModuleSectionTableSeeder::class);
+        $this->call(ComponentTableSeeder::class);
+        $this->call(MenuTableSeeder::class);
 
         Model::reguard();
 

@@ -13,7 +13,7 @@ A REST API to allow frontend frameworks such as angular to use services provided
 
 ## Installation
 1. Clone the repository to the desired location.
-2. Run composer update to pull down components into the vendor folder.
+2. Run **_composer update_** to pull down components into the vendor folder.
 3. Set storage and bootstrap/cache folders to be publicly read/write/executable **_sudo chmod -R 777 <folder name>_**.
 4. Take a copy of the .env.save file and name it .env **_sudo cp .env.save .env_**, this file contains all configuration options for laravel.
 5. Run the **_php artisan key:generate_** command to get a new application key, this should then be set in your .env file if it is not then set it.
@@ -34,7 +34,7 @@ When running the composer install or update command a **_ide_helper.php_** file 
 
 You will also want to install the PHPStorm Laravel plugin, see [this link](http://blog.jetbrains.com/phpstorm/2015/01/laravel-development-using-phpstorm/) for more details.
 
-You can also run the **_sudo php artisan ide-helper:models_** command to auto generate model doc blocks.
+You can also run the **_php artisan ide-helper:models_** command to auto generate model doc blocks.
 
 See the link in the resources section for more info.
 

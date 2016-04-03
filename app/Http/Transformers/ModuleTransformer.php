@@ -3,25 +3,20 @@
 namespace imbalance\Http\Transformers;
 
 
-trait ModuleTransformer {
+class ModuleTransformer extends Transformer {
 
-    use Transformer;
+    public function transform($module) {
 
-    public function transform($moduleDetails) {
+        if (!$module) {
+            return null;
+        }
 
         return [
-            'moduleId' => (int)$moduleDetails['id'],
-            'key' => $moduleDetails['key'],
-            'name' => $moduleDetails['name'],
-            'description' => $moduleDetails['description'],
-            'module_sections' => [
-                'id' => (int)$moduleDetails['module_sections']['id']
-            ]
+            'moduleId' => (int)$module['id'],
+            'key' => $module['key'],
+            'name' => $module['name'],
+            'description' => $module['description']
         ];
-
-    }
-
-    public function transformWithRelation($moduleDetails) {
 
     }
 

@@ -48,9 +48,9 @@ class Handler extends ExceptionHandler
 
         $response = parent::render($request, $e);
 
-        if ($request->is('api/*')) {
-            app('Asm89\Stack\CorsService')->addActualRequestHeaders($response, $request);
-        }
+//        if ($request->is('api/*')) {
+//            app('Asm89\Stack\CorsService')->addActualRequestHeaders($response, $request);
+//        }
 
         return $response;
     }
