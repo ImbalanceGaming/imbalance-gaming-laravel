@@ -34,7 +34,7 @@ class UserTableSeeder extends Seeder {
         $password = $faker->password();
         $user = User::create([
             'username'=>'admin',
-            'password'=>Hash::make($password),
+            'password'=>'imbalanceAdmin',
             'email'=>'admin@imbalancegaming.com',
             'role'=>'Administrator',
             'email_verified'=>true,
