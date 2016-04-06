@@ -39,9 +39,25 @@ Route::group(array('prefix' => 'api', 'middleware' => 'jwt.auth'), function() {
     Route::resource('removeUserFromGroup', 'Groups\GroupController@removeUserFromGroup', array('only' => array('update')));
     Route::resource('addProjectToGroup', 'Groups\GroupController@addProjectToGroup', array('only' => array('update')));
     Route::resource('removeProjectFromGroup', 'Groups\GroupController@removeProjectFromGroup', array('only' => array('update')));
+    Route::resource('findGroups', 'Groups\GroupController@findGroups', array('only' => array('show')));
 
     // Project Routes
     Route::resource('projects', 'Projects\ProjectController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
     Route::resource('deployProject', 'Projects\ProjectController@deployProject', array('only' => array('show')));
     Route::resource('findProjects', 'Projects\ProjectController@findProjects', array('only' => array('show')));
+
+    //Module Routes
+    Route::resource('modules', 'Modules\ModuleController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+    Route::resource('moduleSections', 'Modules\ModuleSectionController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+    Route::resource('findModuleSections', 'Modules\ModuleSectionController@findModuleSections', array('only' => array('show')));
+
+    //Permission Routes
+    Route::resource('permissions', 'Permissions\PermissionController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+    Route::resource('addUserToPermission', 'Permissions\PermissionController@addUserToPermission', array('only' => array('update')));
+    Route::resource('removeUserFromPermission', 'Permissions\PermissionController@removeUserFromPermission', array('only' => array('update')));
+    Route::resource('addGroupToPermission', 'Permissions\PermissionController@addGroupToPermission', array('only' => array('update')));
+    Route::resource('removeGroupFromPermission', 'Permissions\PermissionController@removeGroupFromPermission', array('only' => array('update')));
+    Route::resource('addModuleSectionToPermission', 'Permissions\PermissionController@addModuleSectionToPermission', array('only' => array('update')));
+    Route::resource('removeSectionFromPermission', 'Permissions\PermissionController@removeSectionFromPermission', array('only' => array('update')));
+
 });

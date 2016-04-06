@@ -12,7 +12,7 @@ class ModuleTransformer extends Transformer {
         }
 
         return [
-            'moduleId' => (int)$module['id'],
+            'id' => (int)$module['id'],
             'key' => $module['key'],
             'name' => $module['name'],
             'description' => $module['description']

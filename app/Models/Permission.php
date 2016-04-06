@@ -35,9 +35,10 @@ class Permission extends Model
     protected $fillable = [
         'name',
         'description',
-        'delete',
+        'view',
+        'add',
         'edit',
-        'view'
+        'delete',
     ];
 
     protected $guarded = [];

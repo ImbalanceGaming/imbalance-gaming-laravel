@@ -15,7 +15,10 @@ class DatabaseSeeder extends Seeder
         'module',
         'module_section',
         'component',
-        'menu'
+        'menu',
+        'permission_assignment',
+        'module_section_access',
+        'permission'
     ];
 
     /**
@@ -36,6 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ModuleSectionTableSeeder::class);
         $this->call(ComponentTableSeeder::class);
         $this->call(MenuTableSeeder::class);
+        $this->call(PermissionTableSeeder::class);
 
         Model::reguard();
 

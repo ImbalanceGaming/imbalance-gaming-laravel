@@ -23,7 +23,8 @@ class UserTableSeeder extends Seeder {
             'dob'=>$faker->date(),
             'country'=>$faker->country,
             'website'=>$faker->url,
-            'avatar'=>$faker->image('resources/avatars', 60, 60),
+//            'avatar'=>$faker->image('resources/avatars', 60, 60),
+            'avatar'=>'',
             'twitter_username'=>'c.pratt',
             'facebook'=>$faker->url
         ]);

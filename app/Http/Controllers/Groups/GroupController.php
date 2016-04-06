@@ -43,7 +43,6 @@ class GroupController extends Controller {
         $groupData = [];
 
         /** @var Group $group */
-        // @todo add projects stuff
         foreach ($groups->items() as $group) {
             $groupData[$group->id] = [
                 'group' => $this->_groupTransformer->transform($group),
@@ -149,6 +148,26 @@ class GroupController extends Controller {
             return $this->respondDeleted("Group " . $group->name . " deleted");
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("Group with ID of $id not found.");
+        }
+
+    }
+
+    /**
+     * Find groups from given search term
+     *
+     * @param $searchTerm
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function findGroups($searchTerm) {
+
+        if ($searchTerm) {
+            $groups = Group::where('name', 'LIKE', "%$searchTerm%")->get();
+
+            return $this->respond([
+                'data' => $this->_groupTransformer->transformCollection($groups->toArray())
+            ]);
+        } else {
+            return $this->respond([]);
         }
 
     }
