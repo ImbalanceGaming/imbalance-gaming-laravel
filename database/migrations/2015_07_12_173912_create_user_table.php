@@ -30,6 +30,7 @@ class CreateUserTable extends Migration
             $table->string('avatar', 200)->nullable();
             $table->string('twitter_username', 200)->nullable();
             $table->string('facebook', 200)->nullable();
+            $table->boolean('has_dev_area')->default(false);
             $table->timestamps();
         });
     }

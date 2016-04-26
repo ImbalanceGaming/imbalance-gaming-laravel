@@ -146,4 +146,24 @@ class ModuleController extends Controller {
         }
 
     }
+
+    public function getModule($name) {
+
+        if ($name) {
+            /** @var Module $module */
+            $module = Module::where('name', 'LIKE', "%$name%")->with('moduleSections')->get();
+
+            return $this->respond([
+                'data' => [
+                    'module' => $this->_moduleTransformer->transform($module[0]),
+                    'module_sections' =>
+                        $this->_moduleSectionTransformer->transformCollection($module[0]->modulesections->toArray())
+                ]
+            ]);
+        } else {
+            return $this->respondWithError('Module name not set');
+        }
+
+    }
+
 }

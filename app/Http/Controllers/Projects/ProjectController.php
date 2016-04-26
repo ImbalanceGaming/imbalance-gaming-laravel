@@ -8,7 +8,10 @@ use Illuminate\Http\Request;
 use imbalance\Http\Controllers\Controller;
 use imbalance\Http\Requests;
 use imbalance\Http\Transformers\GroupTransformer;
+use imbalance\Http\Transformers\ProjectHistoryTransformer;
+use imbalance\Http\Transformers\ProjectPackageTransformer;
 use imbalance\Http\Transformers\ProjectTransformer;
+use imbalance\Http\Transformers\ServerTransformer;
 use imbalance\Http\Transformers\UserTransformer;
 use imbalance\Models\Project;
 
@@ -16,10 +19,16 @@ class ProjectController extends Controller {
 
     private $_userTransformer;
     private $_projectTransformer;
+    private $_projectPackageTransformer;
+    private $_projectHistoryTransformer;
+    private $_serverTransformer;
 
     function __construct() {
         $this->_userTransformer = new UserTransformer();
         $this->_projectTransformer = new ProjectTransformer();
+        $this->_projectPackageTransformer = new ProjectPackageTransformer();
+        $this->_projectHistoryTransformer = new ProjectHistoryTransformer();
+        $this->_serverTransformer = new ServerTransformer();
     }
 
     /**
@@ -35,7 +44,14 @@ class ProjectController extends Controller {
             return $this->respondWithError('Pagination limit can not be above 20');
         }
 
-        $projects = Project::paginate($limit);
+        $projects = Project::with([
+            'leadUser',
+            'packages',
+            'history' => function($query) {
+                $query->orderBy('deployment_date', 'desc');
+            },
+            'servers'
+        ])->paginate($limit);
 
         $projectData = [];
 
@@ -43,7 +59,10 @@ class ProjectController extends Controller {
         foreach ($projects->items() as $project) {
             $projectData[$project->id] = [
                 'project' => $this->_projectTransformer->transform($project),
-                'lead_user' => $this->_userTransformer->transform($project->leadUser)
+                'lead_user' => $this->_userTransformer->transform($project->leadUser),
+                'project_packages' => $this->_projectPackageTransformer->transformCollection($project->packages->toArray()),
+                'project_history' => $this->_projectHistoryTransformer->transformCollection($project->history->toArray()),
+                'servers' => $this->_serverTransformer->transformCollection($project->servers->toArray())
             ];
         }
 
@@ -59,7 +78,7 @@ class ProjectController extends Controller {
      */
     public function store(Request $request) {
 
-        if (!$request->has(array('key', 'name', 'description', 'status'))) {
+        if (!$request->has(array('key', 'name', 'description'))) {
             return $this->parametersFailed('Parameters failed validation for a project.');
         }
 
@@ -73,9 +92,7 @@ class ProjectController extends Controller {
                 'key' => $request->get('key'),
                 'name' => $request->get('name'),
                 'description' => $request->get('description'),
-                'status' => $request->get('status'),
                 'url' => $request->get('url'),
-                'git_url' => $request->get('git_url')
             ];
             
             if ($request->get('lead_user_id')) {
@@ -117,7 +134,7 @@ class ProjectController extends Controller {
      */
     public function update(Request $request, $id) {
 
-        if (!$request->has(array('name', 'description', 'status'))) {
+        if (!$request->has(array('name', 'description'))) {
             return $this->parametersFailed('Parameters failed validation for a project.');
         }
 
@@ -126,10 +143,8 @@ class ProjectController extends Controller {
             $project = Project::findOrFail($id);
             $project->name = $request->get('name');
             $project->description = $request->get('description');
-            $project->status = $request->get('status');
             $project->user_id = $request->get('user_id');
             $project->url = $request->get('url');
-            $project->git_url = $request->get('git_url');
             $project->user_id = $request->get('lead_user_id');
             $project->save();
 

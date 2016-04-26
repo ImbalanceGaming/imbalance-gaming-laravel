@@ -12,7 +12,6 @@ use imbalance\Http\Transformers\ModuleSectionTransformer;
 use imbalance\Http\Transformers\PermissionTransformer;
 use imbalance\Http\Transformers\UserTransformer;
 use imbalance\Models\Permission;
-use imbalance\Models\Project;
 
 class PermissionController extends Controller {
 
@@ -158,26 +157,6 @@ class PermissionController extends Controller {
             return $this->respondDeleted("Permission " . $permission->name . " deleted");
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("Permission with ID of $id not found.");
-        }
-
-    }
-
-    /**
-     * Find projects from given search term
-     *
-     * @param $searchTerm
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function findProjects($searchTerm) {
-
-        if ($searchTerm) {
-            $permissions = Project::where('name', 'LIKE', "%$searchTerm%")->get();
-
-            return $this->respond([
-                'data' => $this->_permissionTransformer->transformCollection($permissions->toArray())
-            ]);
-        } else {
-            return $this->respond([]);
         }
 
     }

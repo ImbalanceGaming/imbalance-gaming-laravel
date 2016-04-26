@@ -32,6 +32,7 @@ class UserTransformer extends Transformer {
             'avatar' => $user['avatar'],
             'twitter_username' => $user['twitter_username'],
             'facebook' => $user['facebook'],
+            'has_dev_area' => $user['has_dev_area']
         ];
 
     }

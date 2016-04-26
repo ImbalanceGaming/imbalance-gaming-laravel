@@ -8,8 +8,6 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-
-
 /**
  * imbalance\Models\User
  *
@@ -55,6 +53,9 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property boolean $has_dev_area
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Group[] $groups
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\User whereHasDevArea($value)
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
@@ -98,6 +99,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function permissions() {
         return $this->belongsToMany('imbalance\Models\Permission', 'permission_assignment');
+    }
+
+    public function groups() {
+        return $this->belongsToMany('imbalance\Models\Group', 'group_membership');
     }
 
 }

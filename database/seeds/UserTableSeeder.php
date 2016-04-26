@@ -23,18 +23,19 @@ class UserTableSeeder extends Seeder {
             'dob'=>$faker->date(),
             'country'=>$faker->country,
             'website'=>$faker->url,
-//            'avatar'=>$faker->image('resources/avatars', 60, 60),
-            'avatar'=>'',
+            'avatar'=>$faker->image('resources/avatars', 60, 60),
+//            'avatar'=>'',
             'twitter_username'=>'c.pratt',
-            'facebook'=>$faker->url
+            'facebook'=>$faker->url,
+            'has_dev_area'=>true
         ]);
 
         print "Email: ".$user->email." Password: ".$password."\n";
 
-        $password = $faker->password();
+        $password = 'imbalanceAdmin';
         $user = User::create([
             'username'=>'admin',
-            'password'=>'imbalanceAdmin',
+            'password'=>Hash::make($password),
             'email'=>'admin@imbalancegaming.com',
             'role'=>'Administrator',
             'email_verified'=>true,

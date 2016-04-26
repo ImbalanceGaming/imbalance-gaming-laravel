@@ -4,32 +4,28 @@ namespace imbalance\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
- * Class Project
+ * imbalance\Models\Project
  *
  * @property integer $id
  * @property string $key
  * @property string $name
  * @property string $description
- * @property string $status
+ * @property string $url
  * @property integer $user_id
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
  * @property-read \imbalance\Models\User $leadUser
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Group[] $groups
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\ProjectPackage[] $packages
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereId($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereKey($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereName($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereDescription($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereStatus($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereUserId($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereCreatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property string $url
- * @property string $git_url
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereUrl($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereGitUrl($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereUserId($value)
+ * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Server[] $servers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\ProjectDeploymentHistory[] $history
  */
 class Project extends Model
 {
@@ -41,9 +37,7 @@ class Project extends Model
         'key',
         'name',
         'description',
-        'status',
         'url',
-        'git_url',
         'user_id'
     ];
 
@@ -55,6 +49,18 @@ class Project extends Model
 
     public function groups() {
         return $this->belongsToMany('imbalance\Models\Group', 'project_group');
+    }
+
+    public function servers() {
+        return $this->belongsToMany('imbalance\Models\Server', 'project_server');
+    }
+
+    public function packages() {
+        return $this->hasMany('imbalance\Models\ProjectPackage');
+    }
+
+    public function history() {
+        return $this->hasMany('imbalance\Models\ProjectDeploymentHistory');
     }
 
         

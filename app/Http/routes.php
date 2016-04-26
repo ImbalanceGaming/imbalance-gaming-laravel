@@ -21,10 +21,15 @@ Route::group(array('prefix' => 'api'), function() {
     Route::resource('register', 'Auth\AuthenticateController@register', array('only' => array('store')));
     Route::resource('activate', 'Auth\AuthenticateController@validateEmail', array('only' => array('store')));
     Route::resource('loginUser', 'Auth\AuthenticateController@getAuthenticatedUser', array('only' => array('index')));
-    Route::resource('modules', 'Modules\ModuleController', array('only' => array('index')));
+    Route::resource('getModule', 'Modules\ModuleController@getModule', array('only' => array('show')));
 
     // Test routes turn off when not needed
-//    Route::resource('projects', 'Projects\ProjectController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+//    Route::resource('getModule', 'Modules\ModuleController@getModule', array('only' => array('show')));
+//    Route::resource('findPermissionsForUser', 'Users\UserController@findPermissionsForUser', array('only' => array('show')));
+//    Route::resource('projectPackages', 'Projects\PackageController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+//    Route::resource('projectPackageCommands', 'Projects\PackageCommandController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+
+
 });
 
 Route::group(array('prefix' => 'api', 'middleware' => 'jwt.auth'), function() {
@@ -32,6 +37,7 @@ Route::group(array('prefix' => 'api', 'middleware' => 'jwt.auth'), function() {
     Route::resource('users', 'Users\UserController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
     Route::resource('setActiveStatus', 'Users\UserController@setActiveStatus', array('only' => array('update')));
     Route::resource('findUsers', 'Users\UserController@findUsers', array('only' => array('show')));
+    Route::resource('findPermissionsForUser', 'Users\UserController@findPermissionsForUser', array('only' => array('show')));
 
     // Group Routes
     Route::resource('groups', 'Groups\GroupController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
@@ -43,6 +49,9 @@ Route::group(array('prefix' => 'api', 'middleware' => 'jwt.auth'), function() {
 
     // Project Routes
     Route::resource('projects', 'Projects\ProjectController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+    Route::resource('projectPackages', 'Projects\PackageController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+    Route::resource('projectPackageCommands', 'Projects\PackageCommandController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
+    Route::resource('projectPackageCommandTypes', 'Projects\PackageCommandTypeController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
     Route::resource('deployProject', 'Projects\ProjectController@deployProject', array('only' => array('show')));
     Route::resource('findProjects', 'Projects\ProjectController@findProjects', array('only' => array('show')));
 

@@ -17,9 +17,7 @@ class CreateProjectTable extends Migration
             $table->string('key')->unique();
             $table->string('name');
             $table->string('description')->nullable();
-            $table->string('status')->default('Development');
             $table->string('url')->nullable();
-            $table->string('git_url');
             $table->integer('user_id')->unsigned()->nullable();
         });
 

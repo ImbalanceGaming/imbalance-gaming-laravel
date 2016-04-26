@@ -18,7 +18,11 @@ class DatabaseSeeder extends Seeder
         'menu',
         'permission_assignment',
         'module_section_access',
-        'permission'
+        'permission',
+        'project_package',
+        'project_package_command',
+        'project_package_command_type',
+        'server'
     ];
 
     /**
@@ -40,6 +44,10 @@ class DatabaseSeeder extends Seeder
         $this->call(ComponentTableSeeder::class);
         $this->call(MenuTableSeeder::class);
         $this->call(PermissionTableSeeder::class);
+        $this->call(ProjectPackageTableSeeder::class);
+        $this->call(ProjectPackageCommandTypeTableSeeder::class);
+        $this->call(ProjectPackageCommandTableSeeder::class);
+        $this->call(ProjectServerTableSeeder::class);
 
         Model::reguard();
 

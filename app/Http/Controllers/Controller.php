@@ -9,6 +9,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Class Controller
@@ -122,6 +124,14 @@ abstract class Controller extends BaseController {
         return $this->setStatusCode(IlluminateResponse::HTTP_INTERNAL_SERVER_ERROR)->respondWithError($message);
     }
 
+    /**
+     * @param string $message
+     * @return JsonResponse
+     */
+    protected function updateError($message) {
+        return $this->setStatusCode(IlluminateResponse::HTTP_NOT_ACCEPTABLE)->respondWithError($message);
+    }
+
     // Success
 
     /**
@@ -166,6 +176,42 @@ abstract class Controller extends BaseController {
                 'to' => $paginator->lastItem()
             ]
         ]);
+    }
+
+    /**
+     * @param string $task
+     * @return array
+     */
+    protected function runEnvoy($task) {
+
+        $output = [
+            'completed' => false,
+            'message' => []
+        ];
+
+        $directory = base_path();
+        $process = new Process("/var/www/.config/composer/vendor/bin/envoy run $task");
+        $process->setTimeout(3600);
+        $process->setIdleTimeout(300);
+        $process->setWorkingDirectory($directory);
+
+        try {
+            $process->mustRun(function ($type, $buffer) use (&$output) {
+                if (Process::ERR === $type) {
+                    $output['completed'] = false;
+                } else {
+                    $output['completed'] = true;
+                }
+                array_push($output['message'], $buffer);
+            });
+            return $output;
+        } catch (ProcessFailedException $e) {
+            $output = [
+                'completed' => false,
+                'message' => $e->getMessage()
+            ];
+            return $output;
+        }
     }
 
 }

@@ -4,22 +4,30 @@ namespace imbalance\Http\Controllers\Users;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-use imbalance\Http\Transformers\UserDetailsTransformer;
+use imbalance\Http\Transformers\GroupTransformer;
+use imbalance\Http\Transformers\ModuleSectionTransformer;
+use imbalance\Http\Transformers\PermissionTransformer;
 use imbalance\Http\Transformers\UserTransformer;
 use imbalance\Models\User;
-use imbalance\Models\UserDetail;
 
 use Illuminate\Http\Request;
 use imbalance\Http\Controllers\Controller;
 use PhpParser\Comment;
-use Validator;
 
 class UserController extends Controller {
 
     private $_userTransformer;
+    private $_groupTransformer;
+    private $_permissionTransformer;
+    private $_moduleSectionTransformer;
 
     function __construct() {
+
         $this->_userTransformer = new UserTransformer();
+        $this->_groupTransformer = new GroupTransformer();
+        $this->_permissionTransformer = new PermissionTransformer();
+        $this->_moduleSectionTransformer = new ModuleSectionTransformer();
+        
     }
 
     /**
@@ -29,7 +37,7 @@ class UserController extends Controller {
      */
     public function index() {
 
-        $limit = \Input::get('limit')?:10;
+        $limit = \Input::get('limit') ?: 10;
 
         if ($limit > 20) {
             return $this->respondWithError('Pagination limit can not be above 20');
@@ -62,7 +70,8 @@ class UserController extends Controller {
             try {
                 User::whereUsername($username)->firstOrFail();
                 $username = $username . (string)rand();
-            } catch (ModelNotFoundException $e) {}
+            } catch (ModelNotFoundException $e) {
+            }
 
             $password = str_random();
             $user = User::create([
@@ -78,6 +87,7 @@ class UserController extends Controller {
                 'email' => $user->email,
                 'password' => $password
             ], function ($message) use ($user) {
+
                 $message->subject('Account created @ Imbalance Gaming')
                     ->from('imbalanceAdmin@imbalancegaming.com')
                     ->to($user->email);
@@ -129,9 +139,34 @@ class UserController extends Controller {
             $user->role = $request->get('role');
             $user->forename = $request->get('forename');
             $user->surname = $request->get('surname');
+
+            $output = null;
+
+            if ($request->get('has_dev_area') && !$user->has_dev_area) {
+                $output = $this->runEnvoy("createDev --user=$user->username");
+            } elseif (!$request->get('has_dev_area') && $user->has_dev_area) {
+                $output = $this->runEnvoy("removeDev --user=$user->username");
+            }
+
+            if ($output['completed']) {
+                $user->has_dev_area = $request->get('has_dev_area');
+            }
+
             $user->save();
 
-            return $this->respondUpdated("User " . $user->username . " updated successfully");
+            if ($output) {
+                $message = "User " . $user->username . " updated successfully. <br>";
+                foreach ($output['message'] as $outputMessage) {
+                    $message .= $outputMessage."<br>";
+                }
+                if ($output['completed']) {
+                    return $this->respondUpdated($message);
+                } else {
+                    return $this->updateError($message);
+                }
+            } else {
+                return $this->respondUpdated("User " . $user->username . " updated successfully");
+            }
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("User with ID of $id not found.");
         }
@@ -178,7 +213,7 @@ class UserController extends Controller {
             }
             $user->save();
 
-            return $this->respondUpdated("User " . $user->username . " ".$activeStatus);
+            return $this->respondUpdated("User " . $user->username . " " . $activeStatus);
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("User with ID of $id not found.");
         }
@@ -205,5 +240,34 @@ class UserController extends Controller {
 
     }
 
+    /**
+     * Find all permissions assigned to the user and what sections those permissions relate to.
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function findPermissionsForUser($id) {
+
+        $user = User::with('groups.permissions.moduleSections', 'permissions.moduleSections')->whereId($id)->get();
+
+        $permissions = [];
+
+        foreach ($user[0]['permissions'] as $permissionKey => $permission) {
+            $permissionMid = $this->_permissionTransformer->transform($permission);
+            $permissionMid['module_sections'] = $this->_moduleSectionTransformer->transformCollection($permission['modulesections']->toArray());
+            array_push($permissions, $permissionMid);
+        }
+
+        foreach ($user[0]['groups'] as $groupKey => $group) {
+            foreach ($group['permissions'] as $permissionKey => $permission) {
+                $permissionMid = $this->_permissionTransformer->transform($permission);
+                $permissionMid['module_sections'] = $this->_moduleSectionTransformer->transformCollection($permission['modulesections']->toArray());
+                array_push($permissions, $permissionMid);
+            }
+        }
+
+        return $this->respond($permissions);
+
+    }
 
 }

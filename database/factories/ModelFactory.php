@@ -41,8 +41,6 @@ $factory->define(imbalance\Models\Project::class, function (Faker\Generator $fak
         'key'=>ucfirst(substr($name, 0, 1)),
         'name'=>ucfirst($name),
         'description'=>$faker->sentence,
-        'status'=>'Development',
-        'git_url'=>'test.com',
         'user_id'=>null
     ];
 

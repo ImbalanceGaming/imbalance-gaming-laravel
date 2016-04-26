@@ -16,9 +16,7 @@ class ProjectTransformer extends Transformer {
             'key' => $project['key'],
             'name' => $project['name'],
             'description' => $project['description'],
-            'status' => $project['status'],
             'url' => $project['url'],
-            'git_url' => $project['git_url']
         ];
 
     }
