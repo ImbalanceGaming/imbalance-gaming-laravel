@@ -147,6 +147,12 @@ class ModuleController extends Controller {
 
     }
 
+    /**
+     * Find module based on inputted name
+     *
+     * @param $name
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getModule($name) {
 
         if ($name) {

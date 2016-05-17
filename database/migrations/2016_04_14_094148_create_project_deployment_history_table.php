@@ -15,8 +15,8 @@ class CreateProjectDeploymentHistoryTable extends Migration
         Schema::create('project_deployment_history', function (Blueprint $table) {
             $table->increments('id');
             $table->dateTime('deployment_date');
-            $table->string('committer');
-            $table->string('commit');
+            $table->string('user');
+            $table->string('server');
             $table->string('status');
             $table->integer('project_id')->unsigned();
         });

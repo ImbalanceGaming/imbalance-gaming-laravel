@@ -5,6 +5,7 @@ namespace imbalance\Models;
 use Illuminate\Database\Eloquent\Model;
 
 
+
 /**
  * imbalance\Models\Project
  *
@@ -16,7 +17,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $user_id
  * @property-read \imbalance\Models\User $leadUser
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Group[] $groups
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Server[] $servers
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\ProjectPackage[] $packages
+ * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\ProjectDeploymentHistory[] $history
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereId($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereKey($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereName($value)
@@ -24,8 +27,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereUrl($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\Project whereUserId($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\Server[] $servers
- * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\ProjectDeploymentHistory[] $history
  */
 class Project extends Model
 {
@@ -52,7 +53,7 @@ class Project extends Model
     }
 
     public function servers() {
-        return $this->belongsToMany('imbalance\Models\Server', 'project_server');
+        return $this->belongsToMany('imbalance\Models\Server', 'project_server')->withPivot('first_run');
     }
 
     public function packages() {

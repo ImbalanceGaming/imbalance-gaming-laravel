@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\imbalance\Models\ProjectPackageCommand[] $projectPackageCommands
  * @property string $deploy_location
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectPackage whereDeployLocation($value)
+ * @property integer $order
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectPackage whereOrder($value)
  */
 class ProjectPackage extends Model
 {
@@ -34,7 +36,8 @@ class ProjectPackage extends Model
         'repository',
         'deploy_branch',
         'deploy_location',
-        'project_id'
+        'project_id',
+        'order'
     ];
 
     protected $guarded = [];

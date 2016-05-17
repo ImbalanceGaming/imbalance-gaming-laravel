@@ -66,14 +66,11 @@ class PackageCommandController extends Controller {
             return $this->parametersFailed('Parameters failed validation for a project package command.');
         }
 
-        /** @var ProjectPackageCommandType $commandType */
-        $commandType = ProjectPackageCommandType::whereName($request->get('command_type'))->get();
-
         $data = [
             'command' => $request->get('command'),
             'order' => $request->get('order'),
             'run_on' => $request->get('run_on'),
-            'project_package_command_type_id' => $commandType[0]->id,
+            'project_package_command_type_id' => $request->get('command_type'),
             'project_package_id' => $request->get('project_package_id'),
         ];
 

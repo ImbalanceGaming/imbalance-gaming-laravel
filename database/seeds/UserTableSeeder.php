@@ -45,7 +45,7 @@ class UserTableSeeder extends Seeder {
 
         print "Email: ".$user->email." Password: ".$password."\n";
 
-        factory(\imbalance\Models\User::class, 30)->create()->each(function(\imbalance\Models\User $u) {
+        factory(\imbalance\Models\User::class, 10)->create()->each(function(\imbalance\Models\User $u) {
             print "Email: ".$u->email."\n";
         });
 

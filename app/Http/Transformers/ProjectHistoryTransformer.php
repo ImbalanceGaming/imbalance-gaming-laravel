@@ -20,8 +20,8 @@ class ProjectHistoryTransformer extends Transformer {
         return [
             'id' => (int)$project['id'],
             'deployment_date' => $deploymentDate,
-            'committer' => $project['committer'],
-            'commit' => $project['commit'],
+            'user' => $project['user'],
+            'server' => $project['server'],
             'status' => $project['status']
         ];
 

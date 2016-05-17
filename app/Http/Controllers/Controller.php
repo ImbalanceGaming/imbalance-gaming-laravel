@@ -3,7 +3,7 @@
 namespace imbalance\Http\Controllers;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Contracts\Pagination\Paginator;
+
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response as IlluminateResponse;
@@ -19,6 +19,7 @@ use Symfony\Component\Process\Process;
 abstract class Controller extends BaseController {
 
     use DispatchesJobs, ValidatesRequests;
+    const DEV_SERVER = '192.168.0.2';
 
     /**
      * @var int
@@ -26,6 +27,8 @@ abstract class Controller extends BaseController {
     private $statusCode = Illuminateresponse::HTTP_OK;
 
     /**
+     * Get currently set HTTP status code
+     *
      * @return int
      */
     public function getStatusCode() {
@@ -33,6 +36,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Set HTTP status code
+     *
      * @param int $statusCode
      * @return $this
      */
@@ -44,6 +49,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Send response back to caller in a JSON format
+     *
      * @param array $data
      * @param array $headers
      * @return JsonResponse
@@ -53,6 +60,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Send error response to caller
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -68,6 +77,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Send success response to caller
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -85,6 +96,8 @@ abstract class Controller extends BaseController {
     // Errors
 
     /**
+     * Respond to called with HTTP_NOT_FOUND error code
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -93,6 +106,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Respond to called with HTTP_UNPROCESSABLE_ENTITY error code
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -101,6 +116,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Respond to called with HTTP_UNPROCESSABLE_ENTITY error code
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -109,6 +126,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Respond to called with HTTP_UNAUTHORIZED error code
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -117,14 +136,18 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Respond to called with HTTP_UNAUTHORIZED error code
+     *
      * @param string $message
      * @return JsonResponse
      */
     protected function tokenError($message) {
-        return $this->setStatusCode(IlluminateResponse::HTTP_INTERNAL_SERVER_ERROR)->respondWithError($message);
+        return $this->setStatusCode(IlluminateResponse::HTTP_UNAUTHORIZED)->respondWithError($message);
     }
 
     /**
+     * Respond to called with HTTP_NOT_ACCEPTABLE error code
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -135,6 +158,8 @@ abstract class Controller extends BaseController {
     // Success
 
     /**
+     * Respond to called with HTTP_CREATED success code
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -143,6 +168,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Respond to called with HTTP_OK success code
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -151,6 +178,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Respond to called with HTTP_OK success code
+     *
      * @param string $message
      * @return JsonResponse
      */
@@ -160,6 +189,8 @@ abstract class Controller extends BaseController {
 
     //Pagination
     /**
+     * Respond to called with pagination data attached
+     *
      * @param LengthAwarePaginator $paginator
      * @param array $data
      * @return \Illuminate\Http\JsonResponse
@@ -179,6 +210,8 @@ abstract class Controller extends BaseController {
     }
 
     /**
+     * Run envoy command via SSH
+     *
      * @param string $task
      * @return array
      */
@@ -208,7 +241,7 @@ abstract class Controller extends BaseController {
         } catch (ProcessFailedException $e) {
             $output = [
                 'completed' => false,
-                'message' => $e->getMessage()
+                'message' => [$e->getMessage()]
             ];
             return $output;
         }

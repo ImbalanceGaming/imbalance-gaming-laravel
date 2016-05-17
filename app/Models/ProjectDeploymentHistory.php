@@ -4,23 +4,24 @@ namespace imbalance\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
- * Class ProjectDeploymentHistory
+ * imbalance\Models\ProjectDeploymentHistory
  *
  * @property integer $id
  * @property string $deployment_date
+ * @property string $user
+ * @property string $server
+ * @property string $status
  * @property integer $project_id
+ * @property-read \imbalance\Models\Project $project
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereId($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereDeploymentDate($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereUser($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereServer($value)
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereStatus($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereProjectId($value)
  * @mixin \Eloquent
- * @property-read \imbalance\Models\Project $project
- * @property string $committer
- * @property string $commit
- * @property string $status
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereCommitter($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereCommit($value)
- * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereStatus($value)
  */
 class ProjectDeploymentHistory extends Model
 {
@@ -31,8 +32,8 @@ class ProjectDeploymentHistory extends Model
     protected $fillable = [
         'deployment_date',
         'project_id',
-        'committer',
-        'commit',
+        'user',
+        'server',
         'status'
     ];
 

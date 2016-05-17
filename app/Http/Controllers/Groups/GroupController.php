@@ -12,6 +12,11 @@ use imbalance\Http\Transformers\ProjectTransformer;
 use imbalance\Http\Transformers\UserDetailsTransformer;
 use imbalance\Http\Transformers\UserTransformer;
 use imbalance\Models\Group;
+use imbalance\Models\Project;
+use imbalance\Models\ProjectPackage;
+use imbalance\Models\ProjectPackageCommand;
+use imbalance\Models\Server;
+use imbalance\Models\User;
 
 class GroupController extends Controller {
 
@@ -184,10 +189,28 @@ class GroupController extends Controller {
         try {
             /** @var Group $group */
             $group = Group::findOrFail($id);
+            /** @var Project $projects */
+            $projects = $group->projects;
+            /** @var User $user */
+            $user = User::find($request->get('user_id'));
+
+            $deployResult = false;
+            $message = 'User added to group';
+
+            /** @var Project $project */
+            foreach ($projects as $project) {
+                if (sizeof($project->packages) > 0 && $user->has_dev_area) {
+                    $deployResult = $this->deployProject($project, $user);
+                }
+            }
+
+            if ($deployResult) {
+                $message .= '<br /> Deployed project to user development environment';
+            }
 
             $group->users()->attach($request->get('user_id'));
 
-            return $this->respondUpdated("User added to group");
+            return $this->respondUpdated($message);
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("Group with ID of $id not found.");
         }
@@ -206,10 +229,28 @@ class GroupController extends Controller {
         try {
             /** @var Group $group */
             $group = Group::findOrFail($id);
+            /** @var Project $projects */
+            $projects = $group->projects;
+            /** @var User $user */
+            $user = User::find($request->get('user_id'));
+
+            $deployResult = false;
+            $message = 'User removed from group';
+
+            /** @var Project $project */
+            foreach ($projects as $project) {
+                if (sizeof($project->packages) > 0 && $user->has_dev_area) {
+                    $deployResult = $this->deployProject($project, $user, true);
+                }
+            }
+
+            if ($deployResult) {
+                $message .= "<br /> Removed project from user development environment";
+            }
 
             $group->users()->detach($request->get('user_id'));
 
-            return $this->respondUpdated("User removed from group");
+            return $this->respondUpdated($message);
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("Group with ID of $id not found.");
         }
@@ -228,10 +269,28 @@ class GroupController extends Controller {
         try {
             /** @var Group $group */
             $group = Group::findOrFail($id);
+            /** @var Project $project */
+            $project = Project::find($request->get('project_id'));
+            /** @var User $users */
+            $users = $group->users;
+
+            $deployResult = false;
+            $message = 'Project added to group';
+
+            /** @var User $user */
+            foreach ($users as $user) {
+                if (sizeof($project->packages) > 0 && $user->has_dev_area) {
+                    $deployResult = $this->deployProject($project, $user);
+                }
+            }
+
+            if ($deployResult) {
+                $message .= "<br /> Deployed project to users development environments";
+            }
 
             $group->projects()->attach($request->get('project_id'));
 
-            return $this->respondUpdated("Project added to group");
+            return $this->respondUpdated($message);
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("Group with ID of $id not found.");
         }
@@ -250,12 +309,119 @@ class GroupController extends Controller {
         try {
             /** @var Group $group */
             $group = Group::findOrFail($id);
+            /** @var Project $project */
+            $project = Project::find($request->get('project_id'));
+            /** @var User $users */
+            $users = $group->users;
+
+            $deployResult = false;
+            $message = 'Project removed from group';
+
+            /** @var User $user */
+            foreach ($users as $user) {
+                if (sizeof($project->packages) > 0 && $user->has_dev_area) {
+                    $deployResult = $this->deployProject($project, $user, true);
+                }
+            }
+
+            if ($deployResult) {
+                $message .= "<br /> Removed project from users development environments";
+            }
 
             $group->projects()->detach($request->get('project_id'));
 
-            return $this->respondUpdated("Project removed from group");
+            return $this->respondUpdated($message);
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("Group with ID of $id not found.");
+        }
+
+    }
+
+    /**
+     * Deploy a project on the server
+     *
+     * @param Project $project
+     * @param User $user
+     * @param bool $deleteProject
+     * @return \Illuminate\Http\JsonResponse
+     * @internal param Request $request
+     * @internal param $id
+     */
+    private function deployProject($project, $user, $deleteProject = false) {
+
+        try {
+            $output = null;
+
+            if ($deleteProject) {
+                $output = $this->runEnvoy(
+                    "removeForDev ".
+                    " --deployLocation=" . $project->packages[0]->deploy_location .
+                    " --server=envoy@".Controller::DEV_SERVER .
+                    " --user=".strtolower(substr($user->forename, 0, 1)).strtolower($user->surname)
+                );
+            } else {
+                /** @var ProjectPackage $package */
+                foreach ($project->packages as $package) {
+
+                    $outputTemp = null;
+
+                    $outputTemp = $this->runEnvoy(
+                        'installForDev --repo=' . $package->repository .
+                        ' --deployLocation=' . $package->deploy_location .
+                        ' --server=envoy@'.Controller::DEV_SERVER .
+                        " --user=".strtolower(substr($user->forename, 0, 1)).strtolower($user->surname)
+                    );
+
+                    if (sizeof($output) < 1) {
+                        $output = $outputTemp;
+                    } else {
+                        array_merge($output['message'], $outputTemp['message']);
+                    }
+
+                    /** @var ProjectPackageCommand $command */
+                    foreach ($package->projectPackageCommands as $command) {
+
+                        $runCommand = false;
+
+                        if ($command->run_on == 'install') {
+                            $runCommand = true;
+                        }
+
+                        if ($runCommand) {
+                            $outputTemp = $this->runEnvoy(
+                                "runCommandForDev --command='" . $command->command . "'".
+                                " --deployLocation=" . $package->deploy_location .
+                                " --server=envoy@".Controller::DEV_SERVER .
+                                " --user=".strtolower(substr($user->forename, 0, 1)).strtolower($user->surname)
+                            );
+                        }
+
+                        if (isset($output['message'])) {
+                            if (isset($outputTemp['message'])) {
+                                array_merge($output['message'], $outputTemp['message']);
+                            } else {
+                                array_push($output['message'], $outputTemp);
+                            }
+                        } else {
+                            $output = $outputTemp;
+                        }
+
+                    }
+
+                    if (sizeof($output['message']) < 1) {
+                        $output['completed'] = true;
+                    }
+                }
+            }
+
+            if ($output['completed']) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (ModelNotFoundException $e) {
+            return false;
         }
 
     }

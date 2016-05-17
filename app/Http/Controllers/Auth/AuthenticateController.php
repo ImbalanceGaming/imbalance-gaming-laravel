@@ -22,6 +22,13 @@ class AuthenticateController extends Controller
 
     use ThrottlesLogins;
 
+    /**
+     * Register the user with the system
+     * POST /register
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function register(Request $request) {
 
         if (!$request->has(array('username', 'email', 'password', 'forename', 'surname'))) {
@@ -29,22 +36,23 @@ class AuthenticateController extends Controller
         }
 
         try {
+            User::whereEmail($request->get('email'))->firstOrFail();
+
+            return $this->creationError('A user with the email of '.$request->get('email').' already exists.');
+        } catch (ModelNotFoundException $e) {}
+
+        try {
             User::whereUsername($request->get('username'))->firstOrFail();
 
-            return $this->creationError('A user with the username '.$request->get('username').' already exists.');
+            return $this->creationError('A user with the username of '.$request->get('username').' already exists.');
         } catch(ModelNotFoundException $e) {
             $user = User::create([
                 'username' => $request->get('username'),
                 'email' => $request->get('email'),
-                'password' => \Hash::make($request->get('password'))
-            ]);
-
-            $userDetail = new UserDetail([
+                'password' => \Hash::make($request->get('password')),
                 'forename' => $request->get('forename'),
                 'surname' => $request->get('surname')
             ]);
-
-            $user->userDetail()->save($userDetail);
 
             \Mail::send('email.reg', ['userId'=>$user->id],function($message) use ($user) {
                $message->subject('Please activate your account for Imbalance Gaming')
@@ -57,6 +65,13 @@ class AuthenticateController extends Controller
 
     }
 
+    /**
+     * Validate the user's email address
+     * POST /activate
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function validateEmail(Request $request) {
         $id = $request->only('id')['id'];
 
@@ -66,17 +81,25 @@ class AuthenticateController extends Controller
             $user->email_verified = true;
             $user->save();
 
-            return $this->respondCreated("Activated account for ".$user->username);
+            return $this->respondCreated("Your account is now activated");
         } catch(ModelNotFoundException $e) {
             return $this->respondNotFound("Unable to activate your account.");
         }
     }
 
+    /**
+     * Reset the user's password
+     * POST /reset
+     *
+     * @param Request $request
+     */
     public function resetPassword(Request $request) {
 
     }
 
     /**
+     * Authenticate user using email and password
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -111,6 +134,8 @@ class AuthenticateController extends Controller
     }
 
     /**
+     * Get user from provided token
+     *
      * @return JsonResponse
      * @internal param Request $request
      * @internal param string $token

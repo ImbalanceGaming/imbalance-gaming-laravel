@@ -143,9 +143,19 @@ class UserController extends Controller {
             $output = null;
 
             if ($request->get('has_dev_area') && !$user->has_dev_area) {
-                $output = $this->runEnvoy("createDev --user=$user->username");
+                $output = $this->runEnvoy(
+                    "createDev --user=".
+                    strtolower(substr($user->forename, 0, 1)).
+                    strtolower($user->surname).
+                    " --server=envoy@".Controller::DEV_SERVER
+                );
             } elseif (!$request->get('has_dev_area') && $user->has_dev_area) {
-                $output = $this->runEnvoy("removeDev --user=$user->username");
+                $output = $this->runEnvoy(
+                    "removeDev --user=".
+                    strtolower(substr($user->forename, 0, 1)).
+                    strtolower($user->surname).
+                    " --server=envoy@".Controller::DEV_SERVER
+                );
             }
 
             if ($output['completed']) {

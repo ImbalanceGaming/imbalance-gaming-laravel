@@ -18,16 +18,8 @@ class ProjectServerTableSeeder extends Seeder {
         ]);
 
         $server->projects()->attach(1);
+        $server->projects()->attach(2);
         
-        print "Created server ".$server->name."\n";
-
-        $server = Server::create([
-            'name' => 'Azure Live Server',
-            'address' => '104.47.137.147'
-        ]);
-
-        $server->projects()->attach(1);
-
         print "Created server ".$server->name."\n";
 
     }

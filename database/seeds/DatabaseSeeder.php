@@ -22,7 +22,9 @@ class DatabaseSeeder extends Seeder
         'project_package',
         'project_package_command',
         'project_package_command_type',
-        'server'
+        'server',
+        'project_server',
+        'project_deployment_history'
     ];
 
     /**

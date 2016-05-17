@@ -15,6 +15,8 @@ class CreateProjectServerTable extends Migration
         Schema::create('project_server', function (Blueprint $table) {
             $table->integer('project_id')->unsigned();
             $table->integer('server_id')->unsigned();
+            $table->boolean('first_run')->default(true);
+
             $table->primary(['project_id', 'server_id']);
         });
 

@@ -24,11 +24,8 @@ Route::group(array('prefix' => 'api'), function() {
     Route::resource('getModule', 'Modules\ModuleController@getModule', array('only' => array('show')));
 
     // Test routes turn off when not needed
-//    Route::resource('getModule', 'Modules\ModuleController@getModule', array('only' => array('show')));
-//    Route::resource('findPermissionsForUser', 'Users\UserController@findPermissionsForUser', array('only' => array('show')));
-//    Route::resource('projectPackages', 'Projects\PackageController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
-//    Route::resource('projectPackageCommands', 'Projects\PackageCommandController', array('only' => array('index', 'store', 'show', 'update', 'destroy')));
-
+//    Route::resource('deployProject', 'Projects\ProjectController@deployProject', array('only' => array('show')));
+//    Route::resource('addUserToGroup', 'Groups\GroupController@addUserToGroup', array('only' => array('update')));
 
 });
 

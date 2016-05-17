@@ -18,6 +18,7 @@ class CreateProjectPackageTable extends Migration
             $table->string('repository');
             $table->string('deploy_branch');
             $table->string('deploy_location');
+            $table->integer('order');
             $table->integer('project_id')->unsigned();
         });
 
