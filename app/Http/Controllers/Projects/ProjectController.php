@@ -62,12 +62,37 @@ class ProjectController extends Controller {
 
         /** @var Project $project */
         foreach ($projects->items() as $project) {
+
+            $projectHistory = $project->history;
+
+            $deploymentStats = [
+                'today' => 0,
+                'week' => 0,
+                'duration' => 0
+            ];
+
+            $day = date('w');
+            $week_start = date('Y-m-d', strtotime('-'.$day.' days'));
+            $week_end = date('Y-m-d', strtotime('+'.(6-$day).' days'));
+
+            /** @var ProjectDeploymentHistory $history */
+            foreach ($projectHistory as $history) {
+                if ((time()-(60*60*24)) < strtotime($history->deployment_date)) {
+                    $deploymentStats['today']++;
+                }
+
+                if ($this->check_in_range($week_start, $week_end, $history->deployment_date)) {
+                    $deploymentStats['week']++;
+                }
+            }
+
             $projectData[$project->id] = [
                 'project' => $this->_projectTransformer->transform($project),
                 'lead_user' => $this->_userTransformer->transform($project->leadUser),
                 'project_packages' => $this->_projectPackageTransformer->transformCollection($project->packages->toArray()),
                 'project_history' => $this->_projectHistoryTransformer->transformCollection($project->history->toArray()),
-                'servers' => $this->_serverTransformer->transformCollection($project->servers->toArray())
+                'servers' => $this->_serverTransformer->transformCollection($project->servers->toArray()),
+                'deployment_stats' => $deploymentStats
             ];
         }
 
@@ -329,6 +354,16 @@ class ProjectController extends Controller {
             return $this->respond([]);
         }
 
+    }
+
+    private function check_in_range($start_date, $end_date, $date_from_user) {
+        // Convert to timestamp
+        $start_ts = strtotime($start_date);
+        $end_ts = strtotime($end_date);
+        $user_ts = strtotime($date_from_user);
+
+        // Check that user date is between start & end
+        return (($user_ts >= $start_ts) && ($user_ts <= $end_ts));
     }
     
 }
