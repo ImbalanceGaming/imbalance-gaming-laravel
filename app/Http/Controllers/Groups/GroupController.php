@@ -11,6 +11,7 @@ use imbalance\Http\Transformers\GroupTransformer;
 use imbalance\Http\Transformers\ProjectTransformer;
 use imbalance\Http\Transformers\UserDetailsTransformer;
 use imbalance\Http\Transformers\UserTransformer;
+use imbalance\Jobs\DeployDevProject;
 use imbalance\Models\Group;
 use imbalance\Models\Project;
 use imbalance\Models\ProjectPackage;
@@ -200,13 +201,11 @@ class GroupController extends Controller {
             /** @var Project $project */
             foreach ($projects as $project) {
                 if (sizeof($project->packages) > 0 && $user->has_dev_area) {
-                    $deployResult = $this->deployProject($project, $user);
+                    $this->deployProject($project, $user);
                 }
             }
 
-            if ($deployResult) {
-                $message .= '<br /> Deployed project to user development environment';
-            }
+            $message .= '<br />Deployment job for user added to queue<br />';
 
             $group->users()->attach($request->get('user_id'));
 
@@ -234,19 +233,16 @@ class GroupController extends Controller {
             /** @var User $user */
             $user = User::find($request->get('user_id'));
 
-            $deployResult = false;
             $message = 'User removed from group';
 
             /** @var Project $project */
             foreach ($projects as $project) {
                 if (sizeof($project->packages) > 0 && $user->has_dev_area) {
-                    $deployResult = $this->deployProject($project, $user, true);
+                    $this->deployProject($project, $user, true);
                 }
             }
 
-            if ($deployResult) {
-                $message .= "<br /> Removed project from user development environment";
-            }
+            $message .= "<br /> Remove deployment job for user added to queue";
 
             $group->users()->detach($request->get('user_id'));
 
@@ -274,19 +270,16 @@ class GroupController extends Controller {
             /** @var User $users */
             $users = $group->users;
 
-            $deployResult = false;
             $message = 'Project added to group';
 
             /** @var User $user */
             foreach ($users as $user) {
                 if (sizeof($project->packages) > 0 && $user->has_dev_area) {
-                    $deployResult = $this->deployProject($project, $user);
+                    $this->deployProject($project, $user);
                 }
             }
 
-            if ($deployResult) {
-                $message .= "<br /> Deployed project to users development environments";
-            }
+            $message .= "<br /> Deployment job for users added to queue";
 
             $group->projects()->attach($request->get('project_id'));
 
@@ -314,19 +307,16 @@ class GroupController extends Controller {
             /** @var User $users */
             $users = $group->users;
 
-            $deployResult = false;
             $message = 'Project removed from group';
 
             /** @var User $user */
             foreach ($users as $user) {
                 if (sizeof($project->packages) > 0 && $user->has_dev_area) {
-                    $deployResult = $this->deployProject($project, $user, true);
+                    $this->deployProject($project, $user, true);
                 }
             }
 
-            if ($deployResult) {
-                $message .= "<br /> Removed project from users development environments";
-            }
+            $message .= "<br /> Remove deployment job for users added to queue";
 
             $group->projects()->detach($request->get('project_id'));
 
@@ -343,86 +333,11 @@ class GroupController extends Controller {
      * @param Project $project
      * @param User $user
      * @param bool $deleteProject
-     * @return \Illuminate\Http\JsonResponse
-     * @internal param Request $request
-     * @internal param $id
+     * @return bool|string
      */
     private function deployProject($project, $user, $deleteProject = false) {
 
-        try {
-            $output = null;
-
-            if ($deleteProject) {
-                $output = $this->runEnvoy(
-                    "removeForDev ".
-                    " --deployLocation=" . $project->packages[0]->deploy_location .
-                    " --server=envoy@".Controller::DEV_SERVER .
-                    " --user=".strtolower(substr($user->forename, 0, 1)).strtolower($user->surname)
-                );
-            } else {
-                /** @var ProjectPackage $package */
-                foreach ($project->packages as $package) {
-
-                    $outputTemp = null;
-
-                    $outputTemp = $this->runEnvoy(
-                        'installForDev --repo=' . $package->repository .
-                        ' --deployLocation=' . $package->deploy_location .
-                        ' --server=envoy@'.Controller::DEV_SERVER .
-                        " --user=".strtolower(substr($user->forename, 0, 1)).strtolower($user->surname)
-                    );
-
-                    if (sizeof($output) < 1) {
-                        $output = $outputTemp;
-                    } else {
-                        array_merge($output['message'], $outputTemp['message']);
-                    }
-
-                    /** @var ProjectPackageCommand $command */
-                    foreach ($package->projectPackageCommands as $command) {
-
-                        $runCommand = false;
-
-                        if ($command->run_on == 'install') {
-                            $runCommand = true;
-                        }
-
-                        if ($runCommand) {
-                            $outputTemp = $this->runEnvoy(
-                                "runCommandForDev --command='" . $command->command . "'".
-                                " --deployLocation=" . $package->deploy_location .
-                                " --server=envoy@".Controller::DEV_SERVER .
-                                " --user=".strtolower(substr($user->forename, 0, 1)).strtolower($user->surname)
-                            );
-                        }
-
-                        if (isset($output['message'])) {
-                            if (isset($outputTemp['message'])) {
-                                array_merge($output['message'], $outputTemp['message']);
-                            } else {
-                                array_push($output['message'], $outputTemp);
-                            }
-                        } else {
-                            $output = $outputTemp;
-                        }
-
-                    }
-
-                    if (sizeof($output['message']) < 1) {
-                        $output['completed'] = true;
-                    }
-                }
-            }
-
-            if ($output['completed']) {
-                return true;
-            } else {
-                return false;
-            }
-
-        } catch (ModelNotFoundException $e) {
-            return false;
-        }
+        $this->dispatch(new DeployDevProject($project, $user, $deleteProject));
 
     }
 

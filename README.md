@@ -40,8 +40,10 @@ All commands will be run through www-data user so this user needs to be setup wi
 7. Open the id_rsa.pub file that was created and copy the key line.
 8. Paste this key line into each of the authorized_key files for the envoy user (Make sure you got the whole line).
 9. Run **_sudo chmod 600 authorized_keys_** on each of the authorized_key files.
-10. On the server that runs envoy run **_ssh envoy@ServerAddress_** to make sure the connection works.
+10. On the server that runs envoy run **_ssh envoy@ServerAddress_** to make sure the connection works and authorize the connections as a known host.
 11. If the above dosn't work run the **_ssh -v envoy@ServerAddress_** to get more output about why it is failing.
+
+The envoy user on the server will need to be added to the www-data group and this group will need read, write and execute permissions to the /var/www/html folder so that projects can be deployed.
 
 The above steps will get SSH setup for Envoy the next step outlined below will need to be taken to allow certain sudo commands to be run without requiring a password.
 

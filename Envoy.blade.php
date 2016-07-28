@@ -5,7 +5,7 @@
     $command = isset($command) ? $command : '';
     $repo = isset($repo) ? $repo : '';
     $deployLocation = isset($deployLocation) ? $deployLocation : '';
-    $baseDeployDir = '/var/www/';
+    $baseDeployDir = '/var/www/html/';
     $devBaseDeployDir = '/home/';
 @endsetup
 
@@ -27,13 +27,13 @@
 @endtask
 
 @task('runCommand')
-    cd /var/www/{{$deployLocation}}
+    cd /var/www/html/{{$deployLocation}}
     {{$command}}
     echo "Command {{$command}} completed"
 @endtask
 
 @task('gitPull')
-    cd /var/www/{{$deployLocation}}
+    cd /var/www/html/{{$deployLocation}}
     git pull
 @endtask
 

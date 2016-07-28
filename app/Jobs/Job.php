@@ -3,6 +3,8 @@
 namespace imbalance\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 abstract class Job
 {
@@ -18,4 +20,43 @@ abstract class Job
     */
 
     use Queueable;
+
+    /**
+     * Run envoy command via SSH
+     *
+     * @param string $task
+     * @return array
+     */
+    protected function runEnvoy($task) {
+
+        $output = [
+            'completed' => false,
+            'message' => []
+        ];
+
+        $directory = base_path();
+        $process = new Process("/var/www/.config/composer/vendor/bin/envoy run $task");
+        $process->setTimeout(3600);
+        $process->setIdleTimeout(300);
+        $process->setWorkingDirectory($directory);
+
+        try {
+            $process->mustRun(function ($type, $buffer) use (&$output) {
+                if (Process::ERR === $type) {
+                    $output['completed'] = false;
+                } else {
+                    $output['completed'] = true;
+                }
+                array_push($output['message'], $buffer);
+            });
+            return $output;
+        } catch (ProcessFailedException $e) {
+            $output = [
+                'completed' => false,
+                'message' => [$e->getMessage()]
+            ];
+            return $output;
+        }
+    }
+
 }

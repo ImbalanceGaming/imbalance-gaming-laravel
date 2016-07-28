@@ -19,7 +19,7 @@ use Symfony\Component\Process\Process;
 abstract class Controller extends BaseController {
 
     use DispatchesJobs, ValidatesRequests;
-    const DEV_SERVER = '192.168.0.2';
+    const DEV_SERVER = '192.168.2.4';
 
     /**
      * @var int

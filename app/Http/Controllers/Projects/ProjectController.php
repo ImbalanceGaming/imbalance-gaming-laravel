@@ -6,17 +6,14 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 use imbalance\Http\Controllers\Controller;
-use imbalance\Http\Requests;
-use imbalance\Http\Transformers\GroupTransformer;
 use imbalance\Http\Transformers\ProjectHistoryTransformer;
 use imbalance\Http\Transformers\ProjectPackageTransformer;
 use imbalance\Http\Transformers\ProjectTransformer;
 use imbalance\Http\Transformers\ServerTransformer;
 use imbalance\Http\Transformers\UserTransformer;
+use imbalance\Jobs\DeployProject;
 use imbalance\Models\Project;
 use imbalance\Models\ProjectDeploymentHistory;
-use imbalance\Models\ProjectPackage;
-use imbalance\Models\ProjectPackageCommand;
 use imbalance\Models\Server;
 use imbalance\Models\User;
 
@@ -54,6 +51,7 @@ class ProjectController extends Controller {
             'packages',
             'history' => function($query) {
                 $query->orderBy('deployment_date', 'desc');
+                $query->limit(5);
             },
             'servers'
         ])->paginate($limit);
@@ -104,7 +102,7 @@ class ProjectController extends Controller {
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request) {
 
@@ -117,14 +115,14 @@ class ProjectController extends Controller {
 
             return $this->creationError('A project with the key of ' . $request->get('key') . ' already exists.');
         } catch (ModelNotFoundException $e) {
-            
+
             $data = [
                 'key' => $request->get('key'),
                 'name' => $request->get('name'),
                 'description' => $request->get('description'),
                 'url' => $request->get('url'),
             ];
-            
+
             if ($request->get('lead_user_id')) {
                 $data['user_id'] = $request->get('lead_user_id');
             }
@@ -140,7 +138,7 @@ class ProjectController extends Controller {
      * Display the specified resource.
      *
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id) {
 
@@ -160,7 +158,7 @@ class ProjectController extends Controller {
      *
      * @param  \Illuminate\Http\Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id) {
 
@@ -189,7 +187,7 @@ class ProjectController extends Controller {
      * Remove the specified resource from storage.
      *
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
 
@@ -219,14 +217,13 @@ class ProjectController extends Controller {
             $project = Project::with(['packages' => function($query) {
                 $query->orderBy('order', 'asc');
             }])->findOrFail($id);
-            $serverId = $request->get('serverID');
             /** @var Server $server */
             $server = null;
             $firstRun = false;
 
             /** @var Server $serverObject */
             foreach ($project->servers as $serverObject) {
-                if ($serverObject->id == $serverId) {
+                if ($serverObject->id == $request->get('serverID')) {
                     $server = $serverObject;
                     $firstRun = $server->pivot->first_run;
                 }
@@ -243,92 +240,9 @@ class ProjectController extends Controller {
                 'status' => 'In Progress'
             ]);
 
-            $output = null;
+            $this->dispatch(new DeployProject($project, $server, $user, $history, $firstRun));
 
-            /** @var ProjectPackage $package */
-            foreach ($project->packages as $package) {
-
-                $outputTemp = null;
-
-                if ($firstRun) {
-                    $outputTemp = $this->runEnvoy(
-                        'install --repo=' . $package->repository .
-                        ' --deployLocation=' . $package->deploy_location .
-                        ' --server=envoy@' . $server->address
-                    );
-
-                    if (sizeof($output) < 1) {
-                        $output = $outputTemp;
-                    } else {
-                        array_merge($output['message'], $outputTemp['message']);
-                    }
-                }
-
-                $this->runEnvoy(
-                    'gitPull --deployLocation=' . $package->deploy_location.
-                    ' --server=envoy@' . $server->address
-                );
-
-                /** @var ProjectPackageCommand $command */
-                foreach ($package->projectPackageCommands as $command) {
-
-                    $runCommand = false;
-
-                    if ($firstRun && $command->run_on == 'install') {
-                        $runCommand = true;
-                    } elseif (!$firstRun && $command->run_on == 'update') {
-                        $runCommand = true;
-                    }
-
-                    if ($runCommand) {
-                        $outputTemp = $this->runEnvoy(
-                            "runCommand --command='" . $command->command . "'".
-                            " --deployLocation=" . $package->deploy_location .
-                            " --server=envoy@" . $server->address
-                        );
-                    }
-
-                    if (isset($output['message'])) {
-                        if (isset($outputTemp['message'])) {
-                            array_merge($output['message'], $outputTemp['message']);
-                        } else {
-                            array_push($output['message'], $outputTemp);
-                        }
-                    } else {
-                        $output = $outputTemp;
-                    }
-                }
-
-                if (sizeof($output['message']) < 1) {
-                    $output['completed'] = true;
-                }
-            }
-
-            if ($output['completed']) {
-                $message = "Project [" . $project->key . "]" . $project->name . " deployed <br>";
-            } else {
-                $message = "Project [" . $project->key . "]" . $project->name . " failed to deploy <br>";
-            }
-
-            if (isset($output['message'])) {
-                foreach ($output['message'] as $outputMessage) {
-                    $message .= $outputMessage."<br>";
-                }
-            }
-
-            if ($output['completed']) {
-                $history->status = 'Finished';
-                $history->save();
-                if ($firstRun) {
-                    $project->servers()->updateExistingPivot($serverId, ['first_run'=>false]);
-                }
-
-                return $this->respondUpdated($message);
-            } else {
-                $history->status = 'Failed';
-                $history->save();
-                return $this->updateError($message);
-            }
+            return $this->respondWithSuccess("Deployment job for project [" . $project->key . "]" . $project->name . " queued");
 
         } catch (ModelNotFoundException $e) {
             return $this->respondNotFound("Project with ID of $id not found.");

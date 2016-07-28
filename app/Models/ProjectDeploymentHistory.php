@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereStatus($value)
  * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereProjectId($value)
  * @mixin \Eloquent
+ * @property string $job_output
+ * @method static \Illuminate\Database\Query\Builder|\imbalance\Models\ProjectDeploymentHistory whereJobOutput($value)
  */
 class ProjectDeploymentHistory extends Model
 {
@@ -34,7 +36,8 @@ class ProjectDeploymentHistory extends Model
         'project_id',
         'user',
         'server',
-        'status'
+        'status',
+        'job_output'
     ];
 
     protected $guarded = [];
